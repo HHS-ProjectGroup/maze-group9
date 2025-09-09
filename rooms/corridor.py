@@ -25,6 +25,7 @@ def enterCorridor(state):
         print("\n Cyborg-teacher finds you were wandering around aimlessly and decides to ask you a question.")
         random_quiz_corridor()
     else:
+        print("\n You don't see anything on the corridor.")
 
 
     # --- Command handlers ---
