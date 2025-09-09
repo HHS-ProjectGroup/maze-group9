@@ -33,4 +33,3 @@ def chooseNextRoom(choices):
     except ValueError:
         print("Invalid input.")
         return None
-print("utils executed")

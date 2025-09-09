@@ -23,8 +23,10 @@ state = { # this is a dictionary
     "visited": { # this is also a dictionary, i.e nested dict
         "classroom2015": False,
         "projectroom3": False,
+        "corridor": False,
     },
-    "inventory": []
+    "inventory": [],
+    "health": 3
     # In Python, [] defines an empty list. Python does not have an array type
     # A list is an ordered, mutable container that can hold elements of any type(mixed types)
 }

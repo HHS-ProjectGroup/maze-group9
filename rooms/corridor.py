@@ -7,9 +7,9 @@
 # -----------------------------------------------------------------------------
 
 print("corridor started")
-import sys
+import sys, random
 from .utils import chooseNextRoom, clearScreen
-
+from corridorquiz import random_quiz_corridor
 print("corridor imports resolved")
 
 
@@ -18,7 +18,14 @@ def enterCorridor(state):
     print("You see a long corridor with many doors and glass walls on both side. Behind these door are rooms, waiting to be explored.")
 
     # --- List of accessible rooms from here ---
-    available_rooms = ["classroom2015", "projectroom3", "studylandscape"]
+    available_rooms = ["classroom2015", "projectroom3", "studylandscape", "frontdeskoffice"]
+    # --- Calculate encounter chance ---
+    encounter_chance = random.random()
+    if encounter_chance < 0.3:
+        print("\n Cyborg-teacher finds you were wandering around aimlessly and decides to ask you a question.")
+        random_quiz_corridor()
+    else:
+
 
     # --- Command handlers ---
 
@@ -28,6 +35,7 @@ def enterCorridor(state):
         print("Students and teachers are walking in both directions along the corridor. You see several labeled doors.")
         print(f"- Possible doors: {', '.join(available_rooms)}")
         print("- You current inventory:", state["inventory"])
+        print(f"- Your current health: {state["health"]}")
 
     def handle_help():
         """List available commands and explain navigation."""
