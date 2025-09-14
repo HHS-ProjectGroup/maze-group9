@@ -21,12 +21,15 @@ def enterCorridor(state):
     encounter_chance = random.random()
 
     if encounter_chance < 0.80 and not state["visited"]["corridor"][0]:
-        print("\nCyborg-teacher finds you were wandering around aimlessly and decides to ask you a question.")
+        print("\nCyborg-teacher finds you were wandering around aimlessly in main corridor and decides to ask you a question.")
+        print("He won't let you go until you give an answer.")
+        print("He wants you to give an integer that satisfies this inequality:")
         result = generate_quadratic_inequality(state)
         if result:
-            print("You managed to avoid the punishment.")
+            print("You managed to avoid his punishment. He goes away and you can go on with the maze.")
             state["visited"]["corridor"][1] -= 1
             if state["visited"]["corridor"][1] == 0:
+                print("It seems that you won't be seeing him again.")
                 state["visited"]["corridor"][0] = True
         else:
             print("The cyborg-teacher is really unhappy with your answer. He decides to punish you for that.")
@@ -36,14 +39,14 @@ def enterCorridor(state):
                 print("You died. The game is over.")
                 sys.exit()
     else:
-        print("\n You don't see anything on the corridor.")
+        print("\n You don't see any movement in the corridor.")
 
     # --- Command handlers ---
 
     def handle_look():
         """Describe the corridor and show where the player can go."""
         print("\nYou take a look around.")
-        print("Students and teachers are walking in both directions along the corridor. You see several labeled doors.")
+        print("Everything looks so futuristic. There are strange electronics everywhere. You see several labeled doors.")
         print(f"- Possible doors: {', '.join(available_rooms)}")
         print(f"- Your current inventory: {state["inventory"]}")
         print(f"- Your current health: {state["health"]}")

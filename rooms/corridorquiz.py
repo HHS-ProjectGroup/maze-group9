@@ -4,8 +4,6 @@ import sys
 
 def generate_quadratic_inequality(state):
 
-    print("He wants you to solve this inequality:")
-
     def has_solution(sign, delta, a):
 
         if sign == ">":

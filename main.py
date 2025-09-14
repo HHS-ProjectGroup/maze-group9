@@ -27,7 +27,6 @@ state = {
 }
 
 while True:
-    print("state started")
     current = state["current_room"]
 
     if current == "corridor":
