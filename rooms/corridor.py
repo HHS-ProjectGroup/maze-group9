@@ -6,11 +6,9 @@
 # Date: July 2025
 # -----------------------------------------------------------------------------
 
-print("corridor started")
 import sys, random
 from .utils import chooseNextRoom, clearScreen
-from corridorquiz import random_quiz_corridor
-print("corridor imports resolved")
+from .corridorquiz import generate_quadratic_inequality
 
 
 def enterCorridor(state):
@@ -21,12 +19,24 @@ def enterCorridor(state):
     available_rooms = ["classroom2015", "projectroom3", "studylandscape", "frontdeskoffice"]
     # --- Calculate encounter chance ---
     encounter_chance = random.random()
-    if encounter_chance < 0.3:
-        print("\n Cyborg-teacher finds you were wandering around aimlessly and decides to ask you a question.")
-        random_quiz_corridor()
+
+    if encounter_chance < 0.80 and not state["visited"]["corridor"][0]:
+        print("\nCyborg-teacher finds you were wandering around aimlessly and decides to ask you a question.")
+        result = generate_quadratic_inequality(state)
+        if result:
+            print("You managed to avoid the punishment.")
+            state["visited"]["corridor"][1] -= 1
+            if state["visited"]["corridor"][1] == 0:
+                state["visited"]["corridor"][0] = True
+        else:
+            print("The cyborg-teacher is really unhappy with your answer. He decides to punish you for that.")
+            print("You lost 1 HP.")
+            state["health"] -= 1
+            if state["health"] == 0:
+                print("You died. The game is over.")
+                sys.exit()
     else:
         print("\n You don't see anything on the corridor.")
-
 
     # --- Command handlers ---
 
@@ -35,7 +45,7 @@ def enterCorridor(state):
         print("\nYou take a look around.")
         print("Students and teachers are walking in both directions along the corridor. You see several labeled doors.")
         print(f"- Possible doors: {', '.join(available_rooms)}")
-        print("- You current inventory:", state["inventory"])
+        print(f"- Your current inventory: {state["inventory"]}")
         print(f"- Your current health: {state["health"]}")
 
     def handle_help():

@@ -15,7 +15,6 @@ def enterClassroom2015(state):
     print("The classroom is filled with students. A teacher turns toward you, visibly annoyed.")
     print("The door creaks shut behind you. Everyone is looking at you; it's completely silent.")
 
-    # --- Helperfuncties voor commandoverwerking ---
 
     def handle_look():
         print("\nYou take a careful look around the room.")

@@ -5,9 +5,7 @@
 # Location: Delft
 # Date: July 2025
 # -----------------------------------------------------------------------------
-print("main started")
 from rooms import enterCorridor, enterStudyLandscape, enterClassroom2015, enterProjectRoom3
-print("main imports are resolved")
 
 print("****************************************************************************")
 print("*                      Welcome to the School Maze!                         *")
@@ -16,19 +14,16 @@ print("*    You may need to solve challenges to collect items and unlock rooms. 
 print("*               Once you've visited all rooms, you win!                    *")
 print("****************************************************************************")
 
-state = { # this is a dictionary
+state = {
     "current_room": "corridor",
     "previous_room": "corridor",
-    # add the visited rooms here
-    "visited": { # this is also a dictionary, i.e nested dict
+    "visited": {
         "classroom2015": False,
         "projectroom3": False,
-        "corridor": False,
+        "corridor": [False, 3]
     },
     "inventory": [],
     "health": 3
-    # In Python, [] defines an empty list. Python does not have an array type
-    # A list is an ordered, mutable container that can hold elements of any type(mixed types)
 }
 
 while True:
@@ -50,5 +45,3 @@ while True:
     else:
         print("Unknown room. Exiting game.")
         break
-
-print("main is run")
