@@ -14,4 +14,4 @@ from .classroom2015 import enterClassroom2015
 from .projectroom3 import enterProjectRoom3
 from .utils import chooseNextRoom
 from .corridorquiz import generate_quadratic_inequality
-from .mechanics import take_damage
+from .mechanics import *
