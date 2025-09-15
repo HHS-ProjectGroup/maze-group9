@@ -21,7 +21,7 @@ def enterCorridor(state):
     # --- Calculate encounter chance ---
     encounter_chance = random.random()
 
-    if encounter_chance < 0.99 and not state["visited"]["corridor"][0]:
+    if encounter_chance < 0.50 and not state["visited"]["corridor"][0]:
         print("\nCyborg-teacher finds you were wandering around aimlessly in main corridor and decides to ask you a question.")
         print("He won't let you go until you give an answer.")
         print("He wants you to give an integer that satisfies this inequality:")

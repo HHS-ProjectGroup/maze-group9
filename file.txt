@@ -1,2 +1,0 @@
-this is development branch now,
-I'm gonna add some functionality to do corridor.py
