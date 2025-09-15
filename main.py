@@ -20,6 +20,7 @@ state = {
     "visited": {
         "classroom2015": False,
         "projectroom3": False,
+        "frontdeskoffice": False,
         "corridor": [False, 3]
     },
     "inventory": [],

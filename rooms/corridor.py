@@ -9,6 +9,7 @@
 import sys, random
 from .utils import chooseNextRoom, clearScreen
 from .corridorquiz import generate_quadratic_inequality
+from .mechanics import take_damage
 
 
 def enterCorridor(state):
@@ -27,7 +28,7 @@ def enterCorridor(state):
         result = generate_quadratic_inequality(state)
         if result:
             print("You managed to avoid his punishment. He goes away and you can go on with the maze.")
-            state["visited"]["corridor"][1] -= 1
+            take_damage(state)
             if state["visited"]["corridor"][1] == 0:
                 print("It seems that you won't be seeing him again.")
                 state["visited"]["corridor"][0] = True
