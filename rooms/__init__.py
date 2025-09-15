@@ -8,11 +8,10 @@
 
 # Without this file, Python won't recognize a directory as a package.
 # Runs first when this package is imported
-print("init file started")
 from .corridor import enterCorridor
 from .studylandscape import enterStudyLandscape
 from .classroom2015 import enterClassroom2015
 from .projectroom3 import enterProjectRoom3
 from .utils import chooseNextRoom
-
-print("init file is run")
+from .corridorquiz import generate_quadratic_inequality
+from .mechanics import *

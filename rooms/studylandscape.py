@@ -6,11 +6,9 @@
 # Date: July 2025
 # -----------------------------------------------------------------------------
 
-print("studylandscape started")
 import sys
 from .utils import chooseNextRoom, clearScreen
 
-print("studylandscape imports resolved")
 
 def enterStudyLandscape(state):
     print("\n🛋️ You step into the study landscape.")

@@ -6,9 +6,7 @@
 # Date: July 2025
 # -----------------------------------------------------------------------------
 
-print("utils started")
 import os
-print("utils imports resolved")
 
 def clearScreen():
     if os.getenv("PYCHARM_HOSTED"):
@@ -33,4 +31,3 @@ def chooseNextRoom(choices):
     except ValueError:
         print("Invalid input.")
         return None
-print("utils executed")

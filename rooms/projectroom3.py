@@ -7,14 +7,10 @@
 # Date: July 2025
 # -----------------------------------------------------------------------------
 
-print("projectroom3.py started")
 import sys
 from .utils import chooseNextRoom, clearScreen
 
-print("projectroom3.py imports resolved")
 
-# this function has inner functions that serve as helper functions for this function
-# inner functions are executed only when they're called explicitly
 def enterProjectRoom3(state):
     # --- Check if the player has the key to enter ---
     if not state["visited"]["projectroom3"]:

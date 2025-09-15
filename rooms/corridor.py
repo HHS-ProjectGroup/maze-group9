@@ -6,11 +6,10 @@
 # Date: July 2025
 # -----------------------------------------------------------------------------
 
-print("corridor started")
-import sys
+import sys, random
 from .utils import chooseNextRoom, clearScreen
-
-print("corridor imports resolved")
+from .corridorquiz import generate_quadratic_inequality
+from .mechanics import take_damage
 
 
 def enterCorridor(state):
@@ -18,24 +17,60 @@ def enterCorridor(state):
     print("You see a long corridor with many doors and glass walls on both side. Behind these door are rooms, waiting to be explored.")
 
     # --- List of accessible rooms from here ---
-    available_rooms = ["classroom2015", "projectroom3", "studylandscape"]
+    available_rooms = ["classroom2015", "projectroom3", "studylandscape", "frontdeskoffice"]
+    # --- Calculate encounter chance ---
+    encounter_chance = random.random()
+
+    if encounter_chance < 0.50 and not state["visited"]["corridor"][0]:
+        print("\nCyborg-teacher finds you were wandering around aimlessly in main corridor and decides to ask you a question.")
+        print("He won't let you go until you give an answer.")
+        print("He wants you to give an integer that satisfies this inequality:")
+        result = generate_quadratic_inequality(state)
+        if result:
+            print("You managed to avoid his punishment. He goes away and you can go on with the maze.")
+            state["visited"]["corridor"][1] -= 1
+            if state["visited"]["corridor"][1] == 0:
+                print("\nIt seems that you won't be seeing him again.")
+                print("Suddenly you see something on the ground.")
+                state["visited"]["corridor"][0] = True
+        else:
+            print("The cyborg-teacher is really unhappy with your answer. He decides to punish you for that.")
+            take_damage(state)
+    else:
+        print("\n You don't see any movement in the corridor.")
 
     # --- Command handlers ---
 
     def handle_look():
         """Describe the corridor and show where the player can go."""
         print("\nYou take a look around.")
-        print("Students and teachers are walking in both directions along the corridor. You see several labeled doors.")
+        print("Everything looks so futuristic. There are strange electronics everywhere. You see several labeled doors.")
         print(f"- Possible doors: {', '.join(available_rooms)}")
-        print("- You current inventory:", state["inventory"])
+        print(f"- Your current inventory: {state["inventory"]}")
+        print(f"- Your current health: {state["health"]}")
+
 
     def handle_help():
         """List available commands and explain navigation."""
         print("\nAvailable commands:")
         print("- look around         : See what's in the corridor and where you can go.")
+        if state["visited"]["corridor"][0] and "manual" not in state["inventory"]:
+            print("- take manual            : Pick up the manual once it's revealed.")
         print("- go <room name>      : Move to another room. Example: go classroom2015")
         print("- ?                   : Show this help message.")
         print("- quit                : Quit the game.")
+
+    def handle_take(item):
+        if item == "manual":
+            if not state["visited"]["corridor"]:
+                print("❌ There's no manual visible yet. Visit again to see more challenges")
+            elif "manual" in state["inventory"]:
+                print("You already have the manual in your backpack.")
+            else:
+                print("You take it and tuck it safely into your backpack.")
+                state["inventory"].append("manual")
+        else:
+            print(f"There is no '{item}' here to take.")
 
     def handle_go(room_name):
         """Move to a listed room."""
@@ -58,6 +93,10 @@ def enterCorridor(state):
 
         elif command == "?":
             handle_help()
+
+        elif command.startswith("take "):
+            item = command[5:].strip()
+            handle_take(item)
 
         elif command.startswith("go "):
             room = command[3:].strip()
