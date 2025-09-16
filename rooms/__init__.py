@@ -16,3 +16,4 @@ from .utils import chooseNextRoom
 from .corridorquiz import generate_quadratic_inequality
 from frontdeskoffice import *
 from .mechanics import *
+from .lab03 import *

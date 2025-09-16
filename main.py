@@ -5,7 +5,8 @@
 # Location: Delft
 # Date: July 2025
 # -----------------------------------------------------------------------------
-from rooms import enterCorridor, enterStudyLandscape, enterClassroom2015, enterProjectRoom3, enterFrontDeskOffice
+from rooms import enterCorridor, enterStudyLandscape, enterClassroom2015, enterProjectRoom3, enterFrontDeskOffice, \
+    enterLab03
 
 print("****************************************************************************")
 print("*                      Welcome to the School Maze!                         *")
