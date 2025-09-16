@@ -1,0 +1,183 @@
+# -----------------------------------------------------------------------------
+# File: frontdeskoffice.py
+# ACS School Project - Simple Maze Example
+# Organization: THUAS (The Hague University of Applied Sciences)
+# Location: Delft
+# Date: July 2025
+# -----------------------------------------------------------------------------
+
+import random
+import sys
+
+
+def _ensure_front_desk_state(state):
+    # Initialize persistent state for this room
+    if "frontdeskoffice" not in state["visited"]:
+        state["visited"]["frontdeskoffice"] = False
+    if "frontdesk_question" not in state:
+        state["frontdesk_question"] = None  # will store dict with q, options, correct ('a'..'d')
+    if "frontdesk_reward_spawned" not in state:
+        state["frontdesk_reward_spawned"] = False
+
+
+def _question_pool():
+    # Returns a list of questions with options and correct key
+    return [
+        {
+            "q": "What is the capital of Germany?",
+            "options": {
+                "a": "Berlin",
+                "b": "Munich",
+                "c": "Frankfurt",
+                "d": "Hamburg",
+            },
+            "correct": "a",
+        },
+        {
+            "q": "Which country is Paris the capital of?",
+            "options": {
+                "a": "Spain",
+                "b": "Italy",
+                "c": "France",
+                "d": "Belgium",
+            },
+            "correct": "c",
+        },
+        {
+            "q": "What is the capital of Japan?",
+            "options": {
+                "a": "Kyoto",
+                "b": "Tokyo",
+                "c": "Osaka",
+                "d": "Hiroshima",
+            },
+            "correct": "b",
+        },
+    ]
+
+
+def _print_room_header(state):
+    print("\nYou step into the Front Desk Office.")
+    print("\nA holographic desk shimmers faintly, and a Cyber Receptionist flickers with glitchy static.")
+    print("\nBehind the desk, a sealed access panel hums silently.")
+
+    if not state["visited"]["frontdeskoffice"]:
+        print("\n[Cyber Receptionist]: “Weeeelc-co-meee, challenger. To rec-ceeeive powerrrr, you must answerrrr… correctly.”")
+
+
+def _pick_new_question(state):
+    state["frontdesk_question"] = random.choice(_question_pool())
+
+
+def _show_question(state):
+    q = state["frontdesk_question"]
+    if not q:
+        _pick_new_question(state)
+        q = state["frontdesk_question"]
+    print(f"\nQuestion: {q['q']}")
+    print(f" a) {q['options']['a']}")
+    print(f" b) {q['options']['b']}")
+    print(f" c) {q['options']['c']}")
+    print(f" d) {q['options']['d']}")
+
+
+def _print_commands(state):
+    print("\nAvailable commands:")
+    if not state["visited"]["frontdeskoffice"]:
+        print("- answer <a/b/c/d>    : Answer the current question.")
+    if state["visited"]["frontdeskoffice"] and state["frontdesk_reward_spawned"] and "battery" not in state["inventory"]:
+        print("- take battery         : Pick up the battery reward.")
+    print("- leave                : Exit to the corridor.")
+    print("- ?                    : Show this help message.")
+    print("- look around          : Reprint description and your options.")
+    print("- quit                 : Quit the game.")
+
+
+def enterFrontDeskOffice(state):
+    _ensure_front_desk_state(state)
+
+    # Always show header on entering
+    _print_room_header(state)
+
+    # If solved previously, show post-completion greeting and commands, no questions
+    if state["visited"]["frontdeskoffice"]:
+        print("\n[Cyber Receptionist]: “W-e-eee...lc---ome b...ba-ck, ch-ch-challeng-er...”")
+        _print_commands(state)
+    else:
+        # First-time entry: select or show a question
+        if not state["frontdesk_question"]:
+            _pick_new_question(state)
+        _show_question(state)
+        _print_commands(state)
+
+    # Main command loop for the room
+    while True:
+        command = input("\n> ").strip().lower()
+
+        if command in ("?", "help"):
+            _print_commands(state)
+            continue
+
+        if command == "look around":
+            _print_room_header(state)
+            if not state["visited"]["frontdeskoffice"]:
+                _show_question(state)
+            _print_commands(state)
+            continue
+
+        if command == "leave" or command == "go corridor" or command == "back":
+            print("You step away from the holographic desk and return to the corridor.")
+            state["previous_room"] = "frontdeskoffice"
+            return "corridor"
+
+        if command.startswith("answer "):
+            choice = command.split(" ", 1)[1].strip()
+            if state["visited"]["frontdeskoffice"]:
+                print("You already proved your worth. No more questions.")
+                continue
+            if choice not in ["a", "b", "c", "d"]:
+                print("Please answer with: answer a | answer b | answer c | answer d")
+                continue
+            q = state["frontdesk_question"]
+            if not q:
+                _pick_new_question(state)
+                q = state["frontdesk_question"]
+            if choice == q["correct"]:
+                print("\n[Cyber Receptionist]: “Corrrrrect... ch-challenger. Acc-cccept your re-ward...”")
+                print("The Cyber Receptionist extends a shimmering holo-hand and gently places a battery on the desk in front of you.")
+                print("The battery hums softly with stored energy.")
+                # Spawn battery in the room (once)
+                state["frontdesk_reward_spawned"] = True
+                state["visited"]["frontdeskoffice"] = True
+                # After success, no new questions; show that battery can be taken
+                _print_commands(state)
+            else:
+                print("\n[Cyber Receptionist]: “Inc-c-c-correct. You are unworthy. EJECTING…”")
+                print("You are flung out into the corridor!")
+                state["frontdesk_question"] = None  # ensure a fresh random on next entry
+                state["previous_room"] = "frontdeskoffice"
+                return "corridor"
+            continue
+
+        if command.startswith("take "):
+            item = command[5:].strip().lower()
+            if item == "battery":
+                if state["visited"]["frontdeskoffice"] and state["frontdesk_reward_spawned"]:
+                    if "battery" in state["inventory"]:
+                        print("You already took the battery.")
+                    else:
+                        print("🔋 You take the battery and store it in your backpack.")
+                        state["inventory"].append("battery")
+                        # Battery picked up; keep reward flag so no new battery spawns
+                    _print_commands(state)
+                else:
+                    print("There is no battery available right now.")
+            else:
+                print(f"There is no '{item}' to take here.")
+            continue
+
+        if command == "quit":
+            print("👋 You leave the front desk behind. Game over.")
+            sys.exit()
+
+        print("❓ Unknown command. Type '?' to see available commands.")

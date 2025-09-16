@@ -5,7 +5,7 @@
 # Location: Delft
 # Date: July 2025
 # -----------------------------------------------------------------------------
-from rooms import enterCorridor, enterStudyLandscape, enterClassroom2015, enterProjectRoom3
+from rooms import enterCorridor, enterStudyLandscape, enterClassroom2015, enterProjectRoom3, enterFrontDeskOffice
 
 print("****************************************************************************")
 print("*                      Welcome to the School Maze!                         *")
@@ -30,15 +30,27 @@ state = {
 while True:
     current = state["current_room"]
 
+    # Selim
     if current == "corridor":
         state["current_room"] = enterCorridor(state)
 
+    # Alex
     elif current == "studylandscape":
         state["current_room"] = enterStudyLandscape(state)
 
+    # Gleb
+    elif current == "lab03":
+        state["current_room"] = enterLab03(state)
+
+    # Arda
+    elif current == "frontdeskoffice":
+        state["current_room"] = enterFrontDeskOffice(state)
+
+    # Sil
     elif current == "classroom2015":
         state["current_room"] = enterClassroom2015(state)
 
+    # Bianca
     elif current == "projectroom3":
         state["current_room"] = enterProjectRoom3(state)
 
