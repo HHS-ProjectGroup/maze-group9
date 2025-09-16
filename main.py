@@ -21,7 +21,7 @@ state = {
         "classroom2015": False,
         "projectroom3": False,
         "frontdeskoffice": False,
-        "corridor": [False, 3]
+        "corridor": [False, 3] # the number of encounters left
     },
     "inventory": [],
     "health": 3

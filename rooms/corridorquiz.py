@@ -4,7 +4,7 @@ import sys
 
 def generate_quadratic_inequality(state):
 
-    def has_solution(sign, delta, a):
+    def has_solution(sign, delta, a): # This is for checking if the equation generated has a solution
 
         if sign == ">":
             if a > 0:
@@ -38,7 +38,7 @@ def generate_quadratic_inequality(state):
 
             delta_function = b ** 2 - 4 * a * c
 
-            if has_solution(sign_function, delta_function, a):
+            if has_solution(sign_function, delta_function, a): # If generated equation has no solution, re-generate the equation
                 break
 
         print(f"{a}x² + {b}x + {c} {sign_function} 0")
@@ -47,8 +47,6 @@ def generate_quadratic_inequality(state):
 
     def handle_help():
         print("\nAvailable commands:")
-        if state["visited"]["classroom2015"] and "key" not in state["inventory"]:
-            print("- take manual            : Pick up the manual once it's revealed.")
         print("- answer <number>     : Attempt to solve the math question.")
         print("- ?                   : Show this help message.")
         print("- quit                : Quit the game.")
@@ -65,9 +63,7 @@ def generate_quadratic_inequality(state):
             print("❌ Incorrect.")
             return False
 
-        # --- Commandoloop ---
-
-    check = generate_function()
+    check = generate_function() # This will return a boolean
 
     while True:
         command = input("\n> ").strip().lower()
