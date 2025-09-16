@@ -54,6 +54,8 @@ while True:
     elif current == "projectroom3":
         state["current_room"] = enterProjectRoom3(state)
 
+    # TODO: final room for end game
+
     else:
         print("Unknown room. Exiting game.")
         break
