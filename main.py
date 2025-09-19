@@ -5,8 +5,14 @@
 # Location: Delft
 # Date: July 2025
 # -----------------------------------------------------------------------------
-from rooms import enterCorridor, enterStudyLandscape, enterClassroom2015, enterProjectRoom3, enterFrontDeskOffice, \
-    enterLab03
+from rooms import (
+    enterCorridor,
+    enterStudyLandscape,
+    enterClassroom2015,
+    enterProjectRoom3,
+    enterFrontDeskOffice,
+    enterLab03,
+)
 
 print("****************************************************************************")
 print("*                      Welcome to the School Maze!                         *")
@@ -22,10 +28,10 @@ state = {
         "classroom2015": False,
         "projectroom3": False,
         "frontdeskoffice": False,
-        "corridor": [False, 3] # the number of encounters left
+        "corridor": [False, 3],  # the number of encounters left
     },
     "inventory": [],
-    "health": 3
+    "health": 3,
 }
 
 while True:
@@ -60,3 +66,4 @@ while True:
     else:
         print("Unknown room. Exiting game.")
         break
+

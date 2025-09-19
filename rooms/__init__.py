@@ -8,12 +8,15 @@
 
 # Without this file, Python won't recognize a directory as a package.
 # Runs first when this package is imported
-from .corridor import enterCorridor
-from .studylandscape import enterStudyLandscape
-from .classroom2015 import enterClassroom2015
-from .projectroom3 import *
-from .utils import chooseNextRoom
-from .corridorquiz import generate_quadratic_inequality
-from .frontdeskoffice import *
-from .mechanics import *
-from .lab03 import *
+from rooms.classroom2015 import enterClassroom2015
+from rooms.corridor import enterCorridor
+from rooms.frontdeskoffice import enterFrontDeskOffice
+from rooms.lab03 import enterLab03
+from rooms.lobby import enterStudyLandscape
+from rooms.projectroom3 import enterProjectRoom3
+
+
+## we don't need it here bc there are not used externally. Can be added if we need smth to initialize on start and not in main(resurcive imports and stuff)
+# from mechanics import *
+# from utils import chooseNextRoom
+# from corridorquiz import generate_quadratic_inequality
