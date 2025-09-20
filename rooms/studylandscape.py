@@ -7,7 +7,6 @@
 # -----------------------------------------------------------------------------
 
 import sys
-from .utils import chooseNextRoom
 
 def enterStudyLandscape(state):
     approach_destinations = {

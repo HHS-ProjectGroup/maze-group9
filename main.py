@@ -1,25 +1,12 @@
-# -----------------------------------------------------------------------------
-# File: main.py
-# ACS School Project - Simple Maze Example
-# Organization: THUAS (The Hague University of Applied Sciences)
-# Location: Delft
-# Date: July 2025
-# -----------------------------------------------------------------------------
 from rooms import (
-    enterCorridor,
-    enterStudyLandscape,
     enterClassroom2015,
-    enterProjectRoom3,
+    enterCorridor,
     enterFrontDeskOffice,
     enterLab03,
+    enterProjectRoom3,
+    enterStudyLandscape,
 )
 
-print("****************************************************************************")
-print("*                      Welcome to the School Maze!                         *")
-print("*        Your goal is to explore all important rooms in the school.        *")
-print("*    You may need to solve challenges to collect items and unlock rooms.   *")
-print("*               Once you've visited all rooms, you win!                    *")
-print("****************************************************************************")
 
 state = {
     "current_room": "corridor",
@@ -34,36 +21,60 @@ state = {
     "health": 3,
 }
 
-while True:
-    current = state["current_room"]
 
-    # Selim
-    if current == "corridor":
-        state["current_room"] = enterCorridor(state)
+def main(state):
+    print(
+        "****************************************************************************"
+    )
+    print(
+        "*                      Welcome to the School Maze!                         *"
+    )
+    print(
+        "*        Your goal is to explore all important rooms in the school.        *"
+    )
+    print(
+        "*    You may need to solve challenges to collect items and unlock rooms.   *"
+    )
+    print(
+        "*               Once you've visited all rooms, you win!                    *"
+    )
+    print(
+        "****************************************************************************"
+    )
 
-    # Alex
-    elif current == "studylandscape":
-        state["current_room"] = enterStudyLandscape(state)
+    while True:
+        current = state["current_room"]
 
-    # Gleb
-    elif current == "lab03":
-        state["current_room"] = enterLab03(state)
+        # Selim
+        if current == "corridor":
+            state["current_room"] = enterCorridor(state)
 
-    # Arda
-    elif current == "frontdeskoffice":
-        state["current_room"] = enterFrontDeskOffice(state)
+        # Alex
+        elif current == "studylandscape":
+            state["current_room"] = enterStudyLandscape(state)
 
-    # Sil
-    elif current == "classroom2015":
-        state["current_room"] = enterClassroom2015(state)
+        # Gleb
+        elif current == "lab03":
+            state["current_room"] = enterLab03(state)
 
-    # Bianca
-    elif current == "projectroom3":
-        state["current_room"] = enterProjectRoom3(state)
+        # Arda
+        elif current == "frontdeskoffice":
+            state["current_room"] = enterFrontDeskOffice(state)
 
-    # TODO: final room for end game
+        # Sil
+        elif current == "classroom2015":
+            state["current_room"] = enterClassroom2015(state)
 
-    else:
-        print("Unknown room. Exiting game.")
-        break
+        # Bianca
+        elif current == "projectroom3":
+            state["current_room"] = enterProjectRoom3(state)
 
+        # TODO: final room for end game
+
+        else:
+            print("Unknown room. Exiting game.")
+            break
+
+
+if __name__ == "__main__":
+    main(state)
