@@ -198,6 +198,7 @@ def enterClassroom2015(state):
 
         elif command in ["leave", "back"]:
             print("🚪 You leave the classroom and return to the corridor.")
+            state["visited"]["classroom2015"] = True
             return "corridor"
 
         elif command == "?":

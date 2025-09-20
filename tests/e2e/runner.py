@@ -8,7 +8,11 @@ def run_game_with_commands(commands, entrypoint, state, capsys):
 
     def fake_input(_=None):
         try:
-            return next(commands_iter)
+            val = next(commands_iter)
+            print(
+                f"> {val}{5 * ' '}<{80 * '-'}>{5 * ' '}INPUT"
+            )  # This is the simplest way to add our inputs to log, as we patched print
+            return val
         except StopIteration:
             raise SystemExit("No more commands!")
 

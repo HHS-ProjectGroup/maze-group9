@@ -3,6 +3,8 @@ from rooms.corridorquiz import generate_quadratic_inequality
 import copy
 import pytest
 
+"""Other files can use fixtures from here"""
+
 
 @pytest.fixture()
 def default_blank_state_for_startup():
@@ -13,7 +15,7 @@ def default_blank_state_for_startup():
             "classroom2015": False,
             "projectroom3": False,
             "frontdeskoffice": False,
-            "corridor": [False, 3],
+            "corridor": [True, 3],
             "lab": False,
         },
         "inventory": [],
