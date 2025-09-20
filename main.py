@@ -3,8 +3,10 @@ from rooms import (
     enterCorridor,
     enterFrontDeskOffice,
     enterLab03,
+    enterLab01,
     enterProjectRoom3,
     enterStudyLandscape,
+
 )
 
 
@@ -69,7 +71,8 @@ def main(state):
         elif current == "projectroom3":
             state["current_room"] = enterProjectRoom3(state)
 
-        # TODO: final room for end game
+        elif current == "lab01":
+            state["current_room"] = enterLab01(state)
 
         else:
             print("Unknown room. Exiting game.")

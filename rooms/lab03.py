@@ -211,20 +211,3 @@ def enterLab03(state: dict):
 
         else:
             print("❓ Unknown command. Type '?' to see available commands.")
-
-
-if __name__ == "__main__":
-    state = {
-    "current_room": "corridor",
-    "previous_room": "corridor",
-    "visited": {
-        "classroom2015": False,
-        "projectroom3": False,
-        "frontdeskoffice": False,
-        "corridor": [False, 3],  # the number of encounters left
-            "lab": False
-    },
-    "inventory": [],
-    "health": 3,
-}
-    print(enterLab03(state))

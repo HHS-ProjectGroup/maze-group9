@@ -5,6 +5,8 @@ from rooms.frontdeskoffice import enterFrontDeskOffice
 from rooms.lab03 import enterLab03
 from rooms.studylandscape import enterStudyLandscape
 from rooms.projectroom3 import enterProjectRoom3
+from rooms.lab01 import enterLab01
+
 
 # __all__ = [enterLab03, enterClassroom2015, enterProjectRoom3, enterFrontDeskOffice, enterCorridor, enterStudyLandscape]
 

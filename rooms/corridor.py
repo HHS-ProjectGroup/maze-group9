@@ -5,6 +5,7 @@
 # Location: Delft
 # Date: July 2025
 # -----------------------------------------------------------------------------
+ENCOUNTER_CHANCE_BASE = 0.75 # There is a %75 chance an encounter occurs
 
 import sys, random
 from .utils import chooseNextRoom, clearScreen
@@ -15,14 +16,14 @@ from .mechanics import take_damage
 def enterCorridor(state):
     print("\n🚶 You are standing in the school's main corridor.")
     print("You see a long corridor with many doors and glass walls on both side. Behind these door are rooms, waiting to be explored.")
+    print("Dr. Mara Lin said you need to find the manual here.")
 
     # --- List of accessible rooms from here ---
     available_rooms = ["classroom2015", "projectroom3", "studylandscape", "frontdeskoffice"]
     # --- Calculate encounter chance ---
     turn_roll = random.random()
-    encounter_chance_base = 0.50 # 50% chance an encounter will occur
 
-    if turn_roll < encounter_chance_base and not state["visited"]["corridor"][0]:
+    if turn_roll < ENCOUNTER_CHANCE_BASE and not state["visited"]["corridor"][0]:
         print("\nCyborg-teacher finds you were wandering around aimlessly in main corridor and decides to ask you a question.")
         print("He won't let you go until you give an answer.")
         print("He wants you to give an integer that satisfies this inequality:")
@@ -65,7 +66,7 @@ def enterCorridor(state):
 
     def handle_take(item):
         if item == "manual":
-            if not state["visited"]["corridor"]:
+            if not state["visited"]["corridor"][0]:
                 print("❌ There's no manual visible yet. Visit again to see more challenges")
             elif "manual" in state["inventory"]:
                 print("You already have the manual in your backpack.")
