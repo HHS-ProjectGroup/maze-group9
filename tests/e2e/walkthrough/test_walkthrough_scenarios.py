@@ -28,6 +28,7 @@ BEATABLE_SCENARIOS = [
         leave
 
         # Project Room 3
+        look around
         go projectroom3
         look around
         take hard disk
@@ -80,12 +81,12 @@ class TestBeatability:
         )
 
         # projectroom3 part
-        assert "The door to Project Room 3 blinks red" in output, (
+        assert "You tap the Classroom2025 Keycard." in output, (
             f"We must have obtained access by this point: "
             f"{final_state['inventory']}\n\n"
             f"--- OUTPUT ---\n{noutput}\n--- END OUTPUT ---"
         )
-        assert "Hard Disk" in final_state["inventory"], (
+        assert "hard disk" in final_state["inventory"], (
             f"the returned inventory: {final_state['inventory']}"
         )
 
