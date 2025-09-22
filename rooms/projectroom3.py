@@ -8,7 +8,7 @@
 
 import sys
 
-ENTRY_KEYCARD = "Classroom2025 Keycard"
+ENTRY_KEYCARD = "yellow keycard"
 REWARD_ITEM   = "Hard Disk"
 
 # Hangman-Lite settings (you can tweak these)
@@ -36,7 +36,7 @@ def enterProjectRoom3(state):
             print("AI voice: 'Access denied. Present Classroom2025 Keycard.'")
             return "corridor"
         else:
-            print("\n🪪 You tap the Classroom2025 Keycard. The lock turns green and the door slides open.")
+            print("\n🪪 You tap the yellow keycard. The lock turns green and the door slides open.")
 
     # ---------- room description ----------
     print("\n🧩 You enter Project Room 3.")
