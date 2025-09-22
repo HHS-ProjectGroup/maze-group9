@@ -42,6 +42,6 @@ class TestProjectRoom3:
 
         assert result == expected_room
         if "take hard disk" in commands:
-            assert "Hard Disk" in final_state["inventory"], (
+            assert "hard disk" in final_state["inventory"], (
                 f"the returned inventory: {final_state['inventory']}"
             )
