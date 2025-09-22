@@ -8,12 +8,16 @@
 
 import sys
 
-REWARD_ITEM   = "Hard Disk"
+#Bianca's room item. It is needed in order to get the access to the StudyLandscape
+REWARD_ITEM = "Hard Disk"
 
+#the list of all the rooms
 rooms = ["Classroom2015", "Corridor", "FrontDeskOffice", "Lab03", "Lab01", "ProjectRoom3", "StudyLandscape"]
 
+#the list of room which are accessible from the StudyLandcapeRoom
 available_rooms = ["corridor", "lab01", "lab03"]
 
+#did you approach a computer
 approach_computer = False
 
 # Decrypted word + encryption shift (CEASER encryption)
@@ -28,7 +32,7 @@ approach_destinations = {
     "aid_kits": "There’s a first aid kit in the corner. You never know when it might come in handy."
 }
 
-
+#the enter scrpit
 def enterStudyLandscape(state):
 
     print("\n🛋️ You step into the study landscape.")
@@ -42,7 +46,7 @@ def enterStudyLandscape(state):
         print("Access denied")
 
     # --- Command handlers ---
-
+#story-telling script
     def handle_look():
         """Describe the lobby and show exits."""
         print("\nYou take a slow look around.")
@@ -52,10 +56,14 @@ def enterStudyLandscape(state):
         print("- Your current inventory:", state["inventory"])
         print("You notice several things you could approach:", ", ".join(approach_destinations.keys()))
 
-    # Decryption challenge
+    # Decryption challenge. Ceaser encryption
     def decrypt(text, shift):
+        #alphabet
         print("A B C D E F\nG H I J K L\nM N O P Q R\nS T U V W X\nY Z")
+
+        #encrypted word
         encrypted = ""
+
         for char in text:
             if char.isalpha():
                 if char.islower():
@@ -72,6 +80,7 @@ def enterStudyLandscape(state):
         else:
             print("wrong")
 
+            #User gave wrong answer. Does he want to give a new one?
             def wanna_decrypt_choice():
                 wanna_try = input('Do you want to take one more guess? "yes" or "no": ').strip().lower()
                 if wanna_try == "yes":
@@ -84,6 +93,7 @@ def enterStudyLandscape(state):
 
             wanna_decrypt_choice()
 
+            #Approach script, story telling + functionality
     def handle_approach(target):
         """Handle approaching objects/areas."""
         key = target.lower()
@@ -93,6 +103,7 @@ def enterStudyLandscape(state):
                 global approach_computer
                 approach_computer = True
 
+                #Does our player even wants to start decrypting?
                 def wanna_play_decrypt_choice():
                     wanna_play_decrypt = input('You are approaching the computer. Type "decrypt" to try, otherwise "no": ').strip().lower()
                     if wanna_play_decrypt == "decrypt" and approach_computer:
@@ -107,6 +118,7 @@ def enterStudyLandscape(state):
         else:
             print(f"You can't approach '{target}'. Try: {', '.join(approach_destinations.keys())}")
 
+            #The list with all the commands
     def handle_help():
         """Show help message with available commands."""
         print("\nAvailable commands:")
@@ -117,6 +129,7 @@ def enterStudyLandscape(state):
         print("- quit                : Quit the game.")
         print(f"Current room is {state['current_room']}.")
 
+    # Go function, through this function user can go to the other room.
     def handle_go(destination):
         """Handle movement to another room."""
         if state["current_room"] == "StudyLandscape":
@@ -157,7 +170,7 @@ def enterStudyLandscape(state):
             print("❓ Unknown command. Type '?' to see available commands.")
 
 
-''' Code for solo launch'''
+''' Code for solo launch
 if __name__ == "__main__":
     state = {
         "current_room": "corridor",
@@ -172,3 +185,4 @@ if __name__ == "__main__":
         "health": 3,
     }
     enterStudyLandscape(state)
+'''
