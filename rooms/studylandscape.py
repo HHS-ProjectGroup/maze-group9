@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# File: studylandscape.pн
+# File: studylandscape.py
 # ACS School Project - Simple Maze Example
 # Organization: THUAS (The Hague University of Applied Sciences)
 # Location: Delft
@@ -16,7 +16,7 @@ available_rooms = ["corridor", "lab01", "lab03"]
 
 approach_computer = False
 
-# Фиксированные слово и сдвиг
+# Decrypted word + encryption shift (CEASER encryption)
 word = "cardboard"
 shift = 4
 
