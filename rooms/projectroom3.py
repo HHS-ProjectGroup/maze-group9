@@ -9,10 +9,10 @@
 
 import sys
 
-ENTRY_KEYCARD = "yellow keycard"
-REWARD_ITEM   = "Hard Disk"
+ENTRY_KEYCARD = "yellow keycard"  # item needed to unlock the door
+REWARD_ITEM   = "Hard Disk"  # reward given after solving 
 
-# Hangman-Lite settings (you can tweak these)
+# Hangman-Lite settings
 TARGET_WORD   = "protocol"   # keep lowercase
 MAX_ATTEMPTS  = 6            # wrong guesses allowed
 
@@ -53,13 +53,13 @@ def enterProjectRoom3(state):
     state["visited"]["projectroom3"] = True
 
     # ---------- per-visit puzzle runtime (resets if you leave/fail) ----------
-    attempts_left = MAX_ATTEMPTS
-    revealed      = ["_" for _ in TARGET_WORD]
+    attempts_left = MAX_ATTEMPTS #player gets 6 mistakes
+    revealed      = ["_" for _ in TARGET_WORD]  #display word as underscores
     guessed       = []            # letters tried
     puzzle_active = False         # becomes True after 'start challenge'
 
     # ---------------- helpers ----------------
-    def show_help():
+    def show_help(): 
         print("\nCommands:")
         print("- look around                 : Describe the room.")
         print("- start challenge             : Begin/continue the hangman puzzle.")
@@ -70,7 +70,7 @@ def enterProjectRoom3(state):
         print("- ?                           : Show this help.")
         print("- quit                        : Quit the game.")
 
-    def show_room():
+    def show_room(): #describe the room again, depends on the progress
         print("\nYou look around:")
         print("- Tables, wires, and a humming console.")
         if state["flags"]["projectroom3_solved"]:
@@ -83,14 +83,14 @@ def enterProjectRoom3(state):
         print("- Exits: corridor")
         print("- Inventory:", state["inventory"])
 
-    def word_mask():
+    def word_mask(): #return the word display , underscores + revealed letters
         return " ".join(revealed)
 
-    def print_status():
+    def print_status(): #show the puzzle progress
         guessed_str = ", ".join(guessed) if guessed else "-"
         print(f"Word: {word_mask()}   Attempts left: {attempts_left}   Guessed: {guessed_str}")
 
-    def start_challenge():
+    def start_challenge(): #start the hangman puzzle
         nonlocal puzzle_active
         if state["flags"]["projectroom3_solved"]:
             print("✅ The console is already unlocked.")
@@ -101,7 +101,7 @@ def enterProjectRoom3(state):
             print("“Guess the hidden word. Use 'guess <letter>' or 'solve <word>'.”")
         print_status()
 
-    def finish_success():
+    def finish_success(): #when puzzle is solved correctly
         state["flags"]["projectroom3_solved"] = True
         print("\n🎉 The console flashes green. WORD UNLOCKED.")
         if not state["flags"]["projectroom3_reward_taken"]:
@@ -109,12 +109,12 @@ def enterProjectRoom3(state):
         else:
             print("The reward compartment is already empty.")
 
-    def fail_and_eject():
+    def fail_and_eject():#if puzzle fails, player is sent out
         print("\n🚨 Alarms blare. The console locks and the door slides open.")
         print("The cyberteacher: “Return when you are ready.”")
         return "corridor"
 
-    def handle_guess(letter):
+    def handle_guess(letter): #process a single letter guess in hangman
         nonlocal attempts_left
         if state["flags"]["projectroom3_solved"]:
             print("✅ Already solved.")
@@ -131,21 +131,21 @@ def enterProjectRoom3(state):
             print("You already tried that letter.")
             return None
 
-        guessed.append(letter)
+        guessed.append(letter) #add guess to the list
 
-        if letter in TARGET_WORD:
+        if letter in TARGET_WORD: #reveal all occurrences of this letter
             for i, ch in enumerate(TARGET_WORD):
                 if ch == letter:
                     revealed[i] = letter
             print("✅ Correct.")
             print_status()
-            if "_" not in revealed:
+            if "_" not in revealed: #if no underscores left - word completed
                 finish_success()
-        else:
+        else: #wrong guess
             attempts_left -= 1
-            print("❌ Not present.")
+            print("❌ Not present.") 
             print_status()
-            if attempts_left <= 0:
+            if attempts_left <= 0:  #if no attempts left - left and eject
                 return fail_and_eject()
         return None
 
@@ -159,12 +159,12 @@ def enterProjectRoom3(state):
             return None
 
         guess = word.strip().lower()
-        if guess == TARGET_WORD:
+        if guess == TARGET_WORD: #correct solution
             for i, ch in enumerate(TARGET_WORD):
                 revealed[i] = ch
             finish_success()
             return None
-        else:
+        else: #wrong solution
             attempts_left -= 1
             print("❌ Wrong word.")
             print_status()
@@ -172,15 +172,15 @@ def enterProjectRoom3(state):
                 return fail_and_eject()
         return None
 
-    def handle_take(what):
+    def handle_take(what): #allow player to take reward after solving puzzle
         name = what.strip().lower()
-        if name not in [REWARD_ITEM.lower(), "harddisk", "hard disk"]:
+        if name not in [REWARD_ITEM.lower(), "harddisk", "hard disk"]: #onnly allow specific names for the hard disk
             print(f"❌ There is no '{what}' to take here.")
             return
-        if not state["flags"]["projectroom3_solved"]:
+        if not state["flags"]["projectroom3_solved"]: #if the console puzzle is not solved yet, they cannot take the reward
             print("The console is still locked. Nothing to take yet.")
             return
-        if state["flags"]["projectroom3_reward_taken"]:
+        if state["flags"]["projectroom3_reward_taken"]: #if the reward was already taken, prevent duplication
             print("You already took the reward from this room.")
             return
         state["flags"]["projectroom3_reward_taken"] = True
@@ -188,7 +188,7 @@ def enterProjectRoom3(state):
             state["inventory"].append(REWARD_ITEM)
         print(f"🧷 Taken: {REWARD_ITEM}.")
 
-    def handle_go(dest):
+    def handle_go(dest): #handle leaving this room back to corridor
         if dest in ["corridor", "back"]:
             print("You leave Project Room 3 and return to the corridor.")
             state["previous_room"] = "projectroom3"
@@ -197,24 +197,24 @@ def enterProjectRoom3(state):
         return None
 
     # ---------------- main input loop ----------------
-    while True:
+    while True: #this keeps running until the player leaves the room, while it is inside the room
         command = input("\n> ").strip()
 
-        if command == "look around":
+        if command == "look around": #show the room description again
             show_room()
 
-        elif command == "?":
+        elif command == "?": #show available commands
             show_help()
 
-        elif command == "start challenge":
+        elif command == "start challenge": #begin the hangman puzzlr
             start_challenge()
 
-        elif command.startswith("guess "):
+        elif command.startswith("guess "): #guess a single letter
             result = handle_guess(command[6:])
             if result:
                 return result
 
-        elif command.startswith("solve "):
+        elif command.startswith("solve "): #try to solve the whole word
             result = handle_solve(command[6:])
             if result:
                 return result
