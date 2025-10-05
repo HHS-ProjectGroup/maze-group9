@@ -8,6 +8,8 @@
 
 import sys
 from persistence import save_state, clear_state, reset_state
+from rooms.utils import handle_display_status, display_status
+
 
 def enterClassroom2015(state):
     # --- persistent state for conversation only ---
@@ -71,6 +73,7 @@ def enterClassroom2015(state):
         print("- take yellow keycard   : Pick up the keycard (once visible).")
         print("- check inventory       : See what you are carrying.")
         print("- go corridor/back/leave: Exit the room.")
+        print("- display status        : Show your inventory, location, and visited rooms.")
         print("- pause                 : Save and exit (pause the game).")
         print("- quit                  : Quit without saving.")
 
@@ -205,6 +208,9 @@ def enterClassroom2015(state):
 
         elif command == "?":
             handle_help()
+
+        elif command == "display status":
+            display_status(state)
 
         elif command == "pause":
             print("⏸️ Game paused. Your progress has been saved.")

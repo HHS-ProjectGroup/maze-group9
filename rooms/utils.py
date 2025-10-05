@@ -31,3 +31,19 @@ def chooseNextRoom(choices):
     except ValueError:
         print("Invalid input.")
         return None
+
+def display_status(state):
+    """Show the player's current status including inventory, location, and visited rooms."""
+    print("\n📊 PLAYER STATUS")
+    print(f"- Current location: {state['current_room'].capitalize()}")
+    print(f"- Inventory: {state['inventory'] if state['inventory'] else 'Empty'}")
+    print(f"- Health: {state['health']} HP")
+
+    visited_rooms = [
+        room for room, visited in state["visited"].items()
+        if room != "corridor" and visited is True
+    ]
+    if visited_rooms:
+        print(f"- Rooms visited: {', '.join(visited_rooms)}")
+    else:
+        print("- Rooms visited: None yet")
