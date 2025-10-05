@@ -10,9 +10,27 @@ from rooms import (
 
 )
 from persistence import load_state, get_default_state
+from leaderboard import print_leaderboard, append_result, GameTimer
 
 
 state = get_default_state()
+def _get_player_name() -> str:
+    # Avoid blocking test automation
+    import sys
+    if os.getenv("MAZE_AUTOMATED_TESTING") == "1":
+        return os.getenv("MAZE_TEST_PLAYER", "TestUser")
+    # If stdin is not interactive (e.g., during automated tests), avoid prompting
+    try:
+        if not sys.stdin or not sys.stdin.isatty():
+            return "Player"
+    except Exception:
+        return "Player"
+    try:
+        name = input("Enter your name for the leaderboard (leave empty for 'Player'): ").strip()
+        return name if name else "Player"
+    except Exception:
+        return "Player"
+
 
 
 def main(state):
@@ -71,9 +89,28 @@ def main(state):
 
 
 if __name__ == "__main__":
+    # Show leaderboard before starting
+    print_leaderboard()
+
+    # Start game timer
+    timer = GameTimer()
+    timer.start()
+
     # Always attempt to load previous state saved via 'pause'; if none, start fresh
     loaded = load_state()
     if loaded:
         state = loaded
         print("[Loaded saved game state from database]")
-    main(state)
+    try:
+        main(state)
+    except:pass
+    finally:
+    seconds = timer.stop()
+    name = _get_player_name()
+    # Ensure state is defined and score exists
+    try:
+        score = int(state.get("score", 0)) if isinstance(state, dict) else 0
+    except Exception:
+        score = 0
+    append_result(name=name, score=score, seconds=float(seconds))
+    print("\nYour result has been saved to the leaderboard. Thank you for playing!")
