@@ -1,5 +1,6 @@
 import random
 import sys
+from persistence import save_state, clear_state, reset_state
 
 
 def generate_quadratic_inequality(state):
@@ -49,7 +50,8 @@ def generate_quadratic_inequality(state):
         print("\nAvailable commands:")
         print("- answer <number>     : Attempt to solve the math question.")
         print("- ?                   : Show this help message.")
-        print("- quit                : Quit the game.")
+        print("- pause               : Save and exit (pause the game).")
+        print("- quit                : Quit without saving.")
 
     def handle_answer(answer):
         try:
@@ -76,9 +78,20 @@ def generate_quadratic_inequality(state):
             result = handle_answer(answer)
             return result
 
+        elif command == "pause":
+            print("⏸️ Game paused. Your progress has been saved.")
+            try:
+                save_state(state)
+            finally:
+                sys.exit()
+
         elif command == "quit":
-            print("👋 You drop your backpack, leave the maze behind, and step back into the real world.")
-            sys.exit()
+            print("👋 You drop your backpack, leave the maze behind, and step back into the real world. Progress not saved.")
+            try:
+                clear_state()
+                reset_state(state)
+            finally:
+                sys.exit()
 
         else:
             print("❓ Unknown command. Type '?' to see available commands.")

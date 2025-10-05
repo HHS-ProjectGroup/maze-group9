@@ -7,6 +7,7 @@
 # -----------------------------------------------------------------------------
 
 import sys
+from persistence import save_state, clear_state, reset_state
 
 def enterClassroom2015(state):
     # --- persistent state for conversation only ---
@@ -70,7 +71,8 @@ def enterClassroom2015(state):
         print("- take yellow keycard   : Pick up the keycard (once visible).")
         print("- check inventory       : See what you are carrying.")
         print("- go corridor/back/leave: Exit the room.")
-        print("- quit                  : Quit the game.")
+        print("- pause                 : Save and exit (pause the game).")
+        print("- quit                  : Quit without saving.")
 
     def handle_check_inventory():
         if state["inventory"]:
@@ -204,9 +206,20 @@ def enterClassroom2015(state):
         elif command == "?":
             handle_help()
 
+        elif command == "pause":
+            print("⏸️ Game paused. Your progress has been saved.")
+            try:
+                save_state(state)
+            finally:
+                sys.exit()
+
         elif command == "quit":
-            print("👋 You drop your backpack and exit the maze.")
-            sys.exit()
+            print("👋 You drop your backpack and exit the maze. Progress not saved.")
+            try:
+                clear_state()
+                reset_state(state)
+            finally:
+                sys.exit()
 
         else:
             print("❓ Unknown command. Type '?' to see available commands.")

@@ -7,6 +7,7 @@
 # -----------------------------------------------------------------------------
 
 import sys
+from persistence import save_state, clear_state, reset_state
 
 #Bianca's room item. It is needed in order to get the access to the StudyLandscape
 REWARD_ITEM = "Hard Disk"
@@ -126,7 +127,8 @@ def enterStudyLandscape(state):
         print(f"- approach <thing>    : {approach_destinations} ")
         print("- go corridor / back  : Return to the main corridor.")
         print("- ?                   : Show this help message.")
-        print("- quit                : Quit the game.")
+        print("- pause               : Save and exit (pause the game).")
+        print("- quit                : Quit without saving.")
         print(f"Current room is {state['current_room']}.")
 
     # Go function, through this function user can go to the other room.
@@ -162,9 +164,20 @@ def enterStudyLandscape(state):
             if result:
                 return result
 
+        elif command == "pause":
+            print("⏸️ Game paused. Your progress has been saved.")
+            try:
+                save_state(state)
+            finally:
+                sys.exit()
+
         elif command == "quit":
-            print("👋 You sit back in the softest chair, close your eyes, and exit the adventure. Game over.")
-            sys.exit()
+            print("👋 You sit back in the softest chair, close your eyes, and exit the adventure. Progress not saved.")
+            try:
+                clear_state()
+                reset_state(state)
+            finally:
+                sys.exit()
 
         else:
             print("❓ Unknown command. Type '?' to see available commands.")

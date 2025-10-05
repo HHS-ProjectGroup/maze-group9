@@ -1,5 +1,6 @@
 import sys
 from dataclasses import dataclass, field
+from persistence import save_state, clear_state, reset_state
 
 DESTINATION = "corridor"
 RESULT = "Caesar"
@@ -141,7 +142,8 @@ def enterLab03(state: dict):
             print("- enter the <pc>      : You may find something useful in it.")
         print("- go corridor / back  : Leave the room and return to the corridor.")
         print("- ?                   : Show this help message.")
-        print("- quit                : Quit the game completely.")
+        print("- pause               : Save and exit (pause the game).")
+        print("- quit                : Quit without saving.")
 
     def handle_go(destination):
         """Handle movement out of the room."""
@@ -205,9 +207,20 @@ def enterLab03(state: dict):
             if result:
                 return result
 
+        elif command == "pause":
+            print("⏸️ Game paused. Your progress has been saved.")
+            try:
+                save_state(state)
+            finally:
+                sys.exit()
+
         elif command == "quit":
-            print("👋 You close your notebook and leave the project behind. Game over.")
-            sys.exit()
+            print("👋 You close your notebook and leave the project behind. Progress not saved.")
+            try:
+                clear_state()
+                reset_state(state)
+            finally:
+                sys.exit()
 
         else:
             print("❓ Unknown command. Type '?' to see available commands.")

@@ -8,6 +8,7 @@
 
 import random
 import sys
+from persistence import save_state, clear_state, reset_state
 
 
 def _ensure_front_desk_state(state):
@@ -90,7 +91,8 @@ def _print_commands(state):
     print("- leave                : Exit to the corridor.")
     print("- ?                    : Show this help message.")
     print("- look around          : Reprint description and your options.")
-    print("- quit                 : Quit the game.")
+    print("- pause                : Save and exit (pause the game).")
+    print("- quit                 : Quit without saving.")
 
 
 def enterFrontDeskOffice(state):
@@ -176,8 +178,19 @@ def enterFrontDeskOffice(state):
                 print(f"There is no '{item}' to take here.")
             continue
 
+        if command == "pause":
+            print("⏸️ Game paused. Your progress has been saved.")
+            try:
+                save_state(state)
+            finally:
+                sys.exit()
+
         if command == "quit":
-            print("👋 You leave the front desk behind. Game over.")
-            sys.exit()
+            print("👋 You leave the front desk behind. Progress not saved.")
+            try:
+                clear_state()
+                reset_state(state)
+            finally:
+                sys.exit()
 
         print("❓ Unknown command. Type '?' to see available commands.")

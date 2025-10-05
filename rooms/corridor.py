@@ -11,6 +11,7 @@ import sys, random
 from .utils import chooseNextRoom, clearScreen
 from .corridorquiz import generate_quadratic_inequality
 from .mechanics import take_damage
+from persistence import save_state, clear_state, reset_state
 
 
 def enterCorridor(state):
@@ -62,7 +63,8 @@ def enterCorridor(state):
             print("- take manual         : Pick up the manual once it's revealed.")
         print("- go <room name>      : Move to another room. Example: go classroom2015")
         print("- ?                   : Show this help message.")
-        print("- quit                : Quit the game.")
+        print("- pause               : Save and exit (pause the game).")
+        print("- quit                : Quit without saving.")
 
     def handle_take(item):
         if item == "manual":
@@ -108,9 +110,20 @@ def enterCorridor(state):
             if result:
                 return result
 
+        elif command == "pause":
+            print("⏸️ Game paused. Your progress has been saved.")
+            try:
+                save_state(state)
+            finally:
+                sys.exit()
+
         elif command == "quit":
-            print("👋 You leave the school and the adventure comes to an end. Game over.")
-            sys.exit()
+            print("👋 You leave the school and the adventure comes to an end. Progress not saved.")
+            try:
+                clear_state()
+                reset_state(state)
+            finally:
+                sys.exit()
 
         else:
             print("❓ Unknown command. Type '?' to see available commands.")

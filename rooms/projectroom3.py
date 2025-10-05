@@ -8,6 +8,7 @@
 # Testing git
 
 import sys
+from persistence import save_state, clear_state, reset_state
 
 ENTRY_KEYCARD = "yellow keycard"  # item needed to unlock the door
 REWARD_ITEM   = "Hard Disk"  # reward given after solving 
@@ -68,7 +69,8 @@ def enterProjectRoom3(state):
         print(f"- take {REWARD_ITEM.lower()}               : Take the reward (after success).")
         print("- go corridor / back          : Leave the room.")
         print("- ?                           : Show this help.")
-        print("- quit                        : Quit the game.")
+        print("- pause                        : Save and exit (pause the game).")
+        print("- quit                        : Quit without saving.")
 
     def show_room(): #describe the room again, depends on the progress
         print("\nYou look around:")
@@ -232,9 +234,20 @@ def enterProjectRoom3(state):
             if result:
                 return result
 
+        elif command == "pause":
+            print("⏸️ Game paused. Your progress has been saved.")
+            try:
+                save_state(state)
+            finally:
+                sys.exit()
+
         elif command == "quit":
-            print("👋 You close your notebook and leave the project behind. Game over.")
-            sys.exit()
+            print("👋 You close your notebook and leave the project behind. Progress not saved.")
+            try:
+                clear_state()
+                reset_state(state)
+            finally:
+                sys.exit()
 
         else:
             print("❓ Unknown command. Type '?' for help.")

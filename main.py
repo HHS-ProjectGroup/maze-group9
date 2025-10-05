@@ -1,3 +1,4 @@
+import os
 from rooms import (
     enterClassroom2015,
     enterCorridor,
@@ -8,20 +9,10 @@ from rooms import (
     enterStudyLandscape,
 
 )
+from persistence import load_state, get_default_state
 
 
-state = {
-    "current_room": "corridor",
-    "previous_room": "corridor",
-    "visited": {
-        "classroom2015": False,
-        "projectroom3": False,
-        "frontdeskoffice": False,
-        "corridor": [False, 3],  # the number of encounters left
-    },
-    "inventory": [],
-    "health": 3,
-}
+state = get_default_state()
 
 
 def main(state):
@@ -80,4 +71,9 @@ def main(state):
 
 
 if __name__ == "__main__":
+    # Always attempt to load previous state saved via 'pause'; if none, start fresh
+    loaded = load_state()
+    if loaded:
+        state = loaded
+        print("[Loaded saved game state from database]")
     main(state)
