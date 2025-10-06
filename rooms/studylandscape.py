@@ -5,7 +5,6 @@
 # Location: Delft
 # Date: July 2025
 # -----------------------------------------------------------------------------
-
 import sys
 
 #Bianca's room item. It is needed in order to get the access to the StudyLandscape
@@ -15,8 +14,7 @@ REWARD_ITEM = "Hard Disk"
 rooms = ["Classroom2015", "Corridor", "FrontDeskOffice", "Lab03", "Lab01", "ProjectRoom3", "StudyLandscape"]
 
 #the list of room which are accessible from the StudyLandcapeRoom
-available_rooms = ["corridor", "lab01", "lab03"]
-
+available_rooms = ["corridor", "Lab01", "Lab03"]
 #did you approach a computer
 approach_computer = False
 
@@ -25,14 +23,14 @@ word = "cardboard"
 shift = 4
 
 approach_destinations = {
-    "lab03": "You approach the massive door. The label says 'LAB2003'. Something important must be inside.",
-    "lab01": "You see an old but still working computer. Maybe there’s something useful on it.",
-    "corridor": "On the table lies a project sample. It looks like an unfinished coursework.",
+    "Lab03": "You approach the massive door. The label says 'LAB03'. Something important must be inside.",
+    "Lab01": "You see an old but still working computer. Maybe there’s something useful on it.",
+    "corridor": "On the table lies  a project sample. It looks like an unfinished coursework.",
     "computer": "This is another sample, but with a nice cover page.",
     "aid_kits": "There’s a first aid kit in the corner. You never know when it might come in handy."
 }
 
-#the enter scrpit
+#the enter script
 def enterStudyLandscape(state):
 
     print("\n🛋️ You step into the study landscape.")
@@ -60,6 +58,7 @@ def enterStudyLandscape(state):
     def decrypt(text, shift):
         #alphabet
         print("A B C D E F\nG H I J K L\nM N O P Q R\nS T U V W X\nY Z")
+        print(f"shift: {shift} direction: right")
 
         #encrypted word
         encrypted = ""
@@ -95,11 +94,15 @@ def enterStudyLandscape(state):
 
             #Approach script, story telling + functionality
     def handle_approach(target):
+
         """Handle approaching objects/areas."""
-        key = target.lower()
-        if key in approach_destinations:
-            print(f"\n👉 {approach_destinations[key]}")
-            if key == "computer":
+
+        matched_key = next((key for key in approach_destinations if key.lower() == target.lower()), None)
+
+        if matched_key:
+            print(f"\n👉 {approach_destinations[matched_key]}")
+
+            if matched_key.lower() == "computer":
                 global approach_computer
                 approach_computer = True
 
@@ -115,6 +118,20 @@ def enterStudyLandscape(state):
                         wanna_play_decrypt_choice()
 
                 wanna_play_decrypt_choice()
+
+            elif matched_key.lower() == "lab03":
+                 print("Yuo see the massive metal door. You have typ in the secret word, in order to open it")
+                 user_secret_word = str(input("Enter your secret word: "))
+                 if user_secret_word == word:
+                    handle_go("Lab03")
+                 elif user_secret_word != word:
+                     state["current_room"] = "StudyLandscape"
+                     user_secret_word = user_secret_word_fail()
+                     if user_secret_word == word:
+                         handle_go("Lab03")
+                     else:
+                         user_secret_word_fail()
+
         else:
             print(f"You can't approach '{target}'. Try: {', '.join(approach_destinations.keys())}")
 
@@ -142,6 +159,24 @@ def enterStudyLandscape(state):
             else:
                 print('This command does not exist. Check "?" out to find appropriate commands.')
 
+    def print_minimap(state):
+        state = {"current_room": "enterLab03"}
+        current_room = state.get("current_room", "")
+
+        def mark(room_func):
+            return "*" if current_room == room_func else " "
+
+        minimap = f"""
+    (7) Lab2001 {mark("enterClassroom2015")} ───(6) Lab203 {mark("enterLab01")} ───(5) Lobby {mark("enterLab03")}───(1) Corridor {mark("enterStudyLandscape")}───(2) Front Desk {mark("enterFrontDeskOffice")}
+                                              │
+                                              │
+                                              │
+                              ┌───────────────┴───────────────┐
+                           (3) Room3 {mark("enterProjectRoom3")}        (4) HDD Room {mark("enterHDDRoom")}
+        """.strip("\n")
+
+        print(minimap)
+
     # --- Main command loop ---
     while True:
         command = input("\n> ").strip().lower()
@@ -155,6 +190,7 @@ def enterStudyLandscape(state):
 
         elif command == "?":
             handle_help()
+            print_minimap(state)
 
         elif command.startswith("go "):
             destination = command[3:].strip()
@@ -170,7 +206,7 @@ def enterStudyLandscape(state):
             print("❓ Unknown command. Type '?' to see available commands.")
 
 
-''' Code for solo launch
+''' Code for solo launch'''
 if __name__ == "__main__":
     state = {
         "current_room": "corridor",
@@ -185,4 +221,3 @@ if __name__ == "__main__":
         "health": 3,
     }
     enterStudyLandscape(state)
-'''

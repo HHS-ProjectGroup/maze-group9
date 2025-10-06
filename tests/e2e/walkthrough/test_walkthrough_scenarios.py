@@ -36,7 +36,7 @@ BEATABLE_SCENARIOS = [
 
         # StudyLandscape(here it won't work, need manual tweaks)
         go studylandscape
-        approach lab2003
+        go lab03
 
         # Lab2003
         look around

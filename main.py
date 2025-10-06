@@ -19,7 +19,7 @@ state = {
         "frontdeskoffice": False,
         "corridor": [False, 3],  # the number of encounters left
     },
-    "inventory": [],
+    "inventory": ['Hard Disk'],
     "health": 3,
 }
 
