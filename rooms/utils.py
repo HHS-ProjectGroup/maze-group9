@@ -7,12 +7,15 @@
 # -----------------------------------------------------------------------------
 
 import os
+from typing import Any
+
 
 def clearScreen():
     if os.getenv("PYCHARM_HOSTED"):
         print("\n" * 50)  # fallback for PyCharm,
     else:
-        os.system('cls' if os.name == 'nt' else 'clear')
+        os.system("cls" if os.name == "nt" else "clear")
+
 
 def chooseNextRoom(choices):
     print("\n🔀 Choose a door:")
@@ -32,6 +35,7 @@ def chooseNextRoom(choices):
         print("Invalid input.")
         return None
 
+
 def display_status(state):
     """Show the player's current status including inventory, location, and visited rooms."""
     print("\n📊 PLAYER STATUS")
@@ -40,10 +44,34 @@ def display_status(state):
     print(f"- Health: {state['health']} HP")
 
     visited_rooms = [
-        room for room, visited in state["visited"].items()
+        room
+        for room, visited in state["visited"].items()
         if room != "corridor" and visited is True
     ]
     if visited_rooms:
         print(f"- Rooms visited: {', '.join(visited_rooms)}")
     else:
         print("- Rooms visited: None yet")
+
+
+def handle_help_generic(
+    room_name: str, state_dict: dict[str, Any], specifics: dict[str, str] = {}
+):
+    """
+    Prints help in each room
+    To add specific commands to your room pass in such format: {"command_name": "description", ...}
+    """
+    print(f"\nAvailable commands for {room_name}:")
+    print(
+        f"- look around         : See what's in the {room_name} and where you can go."
+    )
+    print("- go <room name>      : Move to another room. Example: go classroom2015")
+    print("- ?                   : Show this help message.")
+    print("- pause               : Save and exit (pause the game).")
+    print("- quit                : Quit without saving.")
+    for command_name, description in specifics:
+        print(
+            f"- {command_name.lower()}"
+            + " " * (20 - len(command_name))
+            + f": {description}"
+        )
