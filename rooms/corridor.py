@@ -13,7 +13,6 @@ from .corridorquiz import generate_quadratic_inequality
 from .mechanics import take_damage
 from persistence import save_state, clear_state, reset_state
 
-
 def enterCorridor(state):
     print("\n🚶 You are standing in the school's main corridor.")
     print("You see a long corridor with many doors and glass walls on both side. Behind these door are rooms, waiting to be explored.")

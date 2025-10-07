@@ -60,7 +60,7 @@ def enterProjectRoom3(state):
     state["visited"]["projectroom3"] = True
     current_word = None
     if not state["flags"]["projectroom3_solved"]:
-    current_word = random.choice(WORDS)
+        current_word = random.choice(WORDS)
 
     # ---------- per-visit puzzle runtime (resets if you leave/fail) ----------
     attempts_left = MAX_ATTEMPTS  # player gets 6 mistakes
@@ -133,7 +133,6 @@ def enterProjectRoom3(state):
         if not puzzle_active:
             print("No active puzzle. Use 'start challenge' first.")
             return None
-
         letter = letter.strip().lower()
         if len(letter) != 1 or not letter.isalpha():
             print("Please guess a single letter (a-z).")
@@ -144,8 +143,8 @@ def enterProjectRoom3(state):
 
         guessed.append(letter) #add guess to the list
 
-       if letter in current_word:  # reveal all occurrences of this letter
-          for i, ch in enumerate(current_word):
+        if letter in current_word:  # reveal all occurrences of this letter
+            for i, ch in enumerate(current_word):
                 if ch == letter:
                     revealed[i] = letter
             print("✅ Correct.")
@@ -154,7 +153,7 @@ def enterProjectRoom3(state):
                 finish_success()
         else: #wrong guess
             attempts_left -= 1
-            print("❌ Not present.") 
+            print("❌ Not present.")
             print_status()
             if attempts_left <= 0:  #if no attempts left - left and eject
                 return fail_and_eject()
@@ -170,12 +169,12 @@ def enterProjectRoom3(state):
             return None
 
         guess = word.strip().lower()
-       if guess == current_word:  # correct solution
-          for i, ch in enumerate(current_word):
+        if guess == current_word:  # correct solution
+            for i, ch in enumerate(current_word):
                 revealed[i] = ch
             finish_success()
             return None
-        else: #wrong solution
+        else:  # wrong solution
             attempts_left -= 1
             print("❌ Wrong word.")
             print_status()
