@@ -10,9 +10,10 @@
 import sys
 import random
 from persistence import save_state, clear_state, reset_state
+from constants import ITEM_3, ITEM_4, ROOM1, ROOM4
 
-ENTRY_KEYCARD = "yellow keycard"  # item needed to unlock the door
-REWARD_ITEM   = "Hard Disk"  # reward given after solving 
+ENTRY_KEYCARD = ITEM_3  # item needed to unlock the door
+REWARD_ITEM   = ITEM_4  # reward given after solving
 
 # Hangman-Lite settings
 WORDS = [
@@ -25,10 +26,10 @@ MAX_ATTEMPTS  = 6            # wrong guesses allowed
 
 def enterProjectRoom3(state):
     state.setdefault("visited", {})
-    state["visited"].setdefault("projectroom3", False)
+    state["visited"].setdefault(ROOM4, False)
 
     state.setdefault("inventory", [])
-    state.setdefault("previous_room", "corridor")
+    state.setdefault("previous_room", ROOM1)
 
     state.setdefault("flags", {})
     state["flags"].setdefault("projectroom3_solved", False)
@@ -38,11 +39,11 @@ def enterProjectRoom3(state):
     reward_taken = state["flags"]["projectroom3_reward_taken"]
 
     # ---------- gate: first-ever entry needs the keycard ----------
-    if not state["visited"]["projectroom3"]:
+    if not state["visited"][ROOM4]:
         if ENTRY_KEYCARD not in state["inventory"]:
             print("\n🔒 The door to Project Room 3 blinks red.")
-            print("AI voice: 'Access denied. Present Classroom2025 Keycard.'")
-            return "corridor"
+            print(f"AI voice: 'Access denied. Present {ITEM_3.title()}.'")
+            return ROOM1
         else:
             print("\n🪪 You tap the yellow keycard. The lock turns green and the door slides open.")
 
@@ -57,7 +58,7 @@ def enterProjectRoom3(state):
         print("A cyberteacher avatar materializes: 'Restore the system by guessing the word.'")
 
     # mark as visited so the door gate won't repeat
-    state["visited"]["projectroom3"] = True
+    state["visited"][ROOM4] = True
     current_word = None
     if not state["flags"]["projectroom3_solved"]:
         current_word = random.choice(WORDS)
@@ -91,7 +92,7 @@ def enterProjectRoom3(state):
                 print("- The reward compartment is empty (already claimed).")
         else:
             print("- The console shows a masked word. You can 'start challenge'.")
-        print("- Exits: corridor")
+        print(f"- Exits: {ROOM1}")
         print("- Inventory:", state["inventory"])
 
     def word_mask(): #return the word display , underscores + revealed letters
@@ -123,7 +124,7 @@ def enterProjectRoom3(state):
     def fail_and_eject():#if puzzle fails, player is sent out
         print("\n🚨 Alarms blare. The console locks and the door slides open.")
         print("The cyberteacher: “Return when you are ready.”")
-        return "corridor"
+        return ROOM1
 
     def handle_guess(letter): #process a single letter guess in hangman
         nonlocal attempts_left
@@ -184,7 +185,7 @@ def enterProjectRoom3(state):
 
     def handle_take(what): #allow player to take reward after solving puzzle
         name = what.strip().lower()
-        if name not in [REWARD_ITEM.lower(), "harddisk", "hard disk"]: #onnly allow specific names for the hard disk
+        if name not in [REWARD_ITEM.lower(), ITEM_4]: #onnly allow specific names for the hard disk
             print(f"❌ There is no '{what}' to take here.")
             return
         if not state["flags"]["projectroom3_solved"]: #if the console puzzle is not solved yet, they cannot take the reward
@@ -199,10 +200,10 @@ def enterProjectRoom3(state):
         print(f"🧷 Taken: {REWARD_ITEM}.")
 
     def handle_go(dest): #handle leaving this room back to corridor
-        if dest in ["corridor", "back"]:
-            print("You leave Project Room 3 and return to the corridor.")
-            state["previous_room"] = "projectroom3"
-            return "corridor"
+        if dest in [ROOM1, "back"]:
+            print(f"You leave Project Room 3 and return to the {ROOM1}.")
+            state["previous_room"] = ROOM4
+            return ROOM1
         print(f"❌ You can't go to '{dest}' from here.")
         return None
 
@@ -237,8 +238,8 @@ def enterProjectRoom3(state):
             if result:
                 return result
 
-        elif command in ["go corridor", "go back", "back"]:
-            result = handle_go("corridor")
+        elif command in [f"go {ROOM1}", "go back", "back"]:
+            result = handle_go(ROOM1)
             if result:
                 return result
 
