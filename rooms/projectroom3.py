@@ -8,13 +8,19 @@
 # Testing git
 
 import sys
+import random
 from persistence import save_state, clear_state, reset_state
 
 ENTRY_KEYCARD = "yellow keycard"  # item needed to unlock the door
 REWARD_ITEM   = "Hard Disk"  # reward given after solving 
 
 # Hangman-Lite settings
-TARGET_WORD   = "protocol"   # keep lowercase
+WORDS = [
+    "protocol", "network", "hardware", "software", "debugger",
+    "compiler", "variable", "function", "iterate", "package",
+    "python", "student", "teacher", "project", "console"
+]
+
 MAX_ATTEMPTS  = 6            # wrong guesses allowed
 
 def enterProjectRoom3(state):
@@ -52,10 +58,13 @@ def enterProjectRoom3(state):
 
     # mark as visited so the door gate won't repeat
     state["visited"]["projectroom3"] = True
+    current_word = None
+    if not state["flags"]["projectroom3_solved"]:
+    current_word = random.choice(WORDS)
 
     # ---------- per-visit puzzle runtime (resets if you leave/fail) ----------
-    attempts_left = MAX_ATTEMPTS #player gets 6 mistakes
-    revealed      = ["_" for _ in TARGET_WORD]  #display word as underscores
+    attempts_left = MAX_ATTEMPTS  # player gets 6 mistakes
+    revealed      = ["_" for _ in (current_word or "")]  # underscores for the chosen word
     guessed       = []            # letters tried
     puzzle_active = False         # becomes True after 'start challenge'
 
@@ -135,8 +144,8 @@ def enterProjectRoom3(state):
 
         guessed.append(letter) #add guess to the list
 
-        if letter in TARGET_WORD: #reveal all occurrences of this letter
-            for i, ch in enumerate(TARGET_WORD):
+       if letter in current_word:  # reveal all occurrences of this letter
+          for i, ch in enumerate(current_word):
                 if ch == letter:
                     revealed[i] = letter
             print("✅ Correct.")
@@ -161,8 +170,8 @@ def enterProjectRoom3(state):
             return None
 
         guess = word.strip().lower()
-        if guess == TARGET_WORD: #correct solution
-            for i, ch in enumerate(TARGET_WORD):
+       if guess == current_word:  # correct solution
+          for i, ch in enumerate(current_word):
                 revealed[i] = ch
             finish_success()
             return None

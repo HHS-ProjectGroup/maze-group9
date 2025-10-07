@@ -144,6 +144,24 @@ def enterStudyLandscape(state):
             else:
                 print('This command does not exist. Check "?" out to find appropriate commands.')
 
+    def print_minimap(state):
+        state = {"current_room": "enterLab03"}
+        current_room = state.get("current_room", "")
+
+        def mark(room_func):
+            return "*" if current_room == room_func else " "
+
+        minimap = f"""
+       (7) Lab2001 {mark("enterClassroom2015")} ───(6) Lab203 {mark("enterLab01")} ───(5) Lobby {mark("enterLab03")}───(1) Corridor {mark("enterStudyLandscape")}───(2) Front Desk {mark("enterFrontDeskOffice")}
+                                                  │
+                                                  │
+                                                  │
+                                  ┌───────────────┴───────────────┐
+                                (3) Room3 {mark("enterProjectRoom3")}        (4) HDD Room {mark("enterHDDRoom")}
+           """.strip("\n")
+
+        print(minimap)
+
     # --- Main command loop ---
     while True:
         command = input("\n> ").strip().lower()
@@ -157,10 +175,12 @@ def enterStudyLandscape(state):
 
         elif command == "?":
             handle_help()
+            print_minimap(state)
 
         elif command.startswith("go "):
             destination = command[3:].strip()
             result = handle_go(destination)
+            print_minimap(state)
             if result:
                 return result
 
@@ -183,7 +203,7 @@ def enterStudyLandscape(state):
             print("❓ Unknown command. Type '?' to see available commands.")
 
 
-''' Code for solo launch
+''' Code for solo launch'''
 if __name__ == "__main__":
     state = {
         "current_room": "corridor",
@@ -198,4 +218,4 @@ if __name__ == "__main__":
         "health": 3,
     }
     enterStudyLandscape(state)
-'''
+
