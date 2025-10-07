@@ -103,10 +103,11 @@ if __name__ == "__main__":
         print("[Loaded saved game state from database]")
     try:
         main(state)
-    except:pass
+    except:
+        pass
     finally:
-    seconds = timer.stop()
-    name = _get_player_name()
+     seconds = timer.stop()
+     name = _get_player_name()
     # Ensure state is defined and score exists
     try:
         score = int(state.get("score", 0)) if isinstance(state, dict) else 0
