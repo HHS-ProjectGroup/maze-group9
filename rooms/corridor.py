@@ -8,7 +8,9 @@
 ENCOUNTER_CHANCE_BASE = 0.75 # There is a %75 chance an encounter occurs
 
 import sys, random
-from .utils import chooseNextRoom, clearScreen
+
+from rooms.constants import ROOM1
+from .utils import chooseNextRoom, clearScreen, handle_help_generic
 from .corridorquiz import generate_quadratic_inequality
 from .mechanics import take_damage
 from persistence import save_state, clear_state, reset_state
@@ -54,7 +56,7 @@ def enterCorridor(state):
         print(f"- Your current inventory: {state["inventory"]}")
         print(f"- Your current health: {state["health"]}")
 
-
+    
     def handle_help():
         """List available commands and explain navigation."""
         print("\nAvailable commands:")
@@ -65,6 +67,12 @@ def enterCorridor(state):
         print("- ?                   : Show this help message.")
         print("- pause               : Save and exit (pause the game).")
         print("- quit                : Quit without saving.")
+
+    def handle_help_new():
+        if state["visited"]["corridor"][0] and "manual" not in state["inventory"]:
+            handle_help_generic(room_name=ROOM1, state_dict=state, specifics={"take manual": "Pick up the manual once it's revealed"})
+        else:
+            handle_help_generic(room_name=ROOM1, state_dict=state)
 
     def handle_take(item):
         if item == ITEM_1:

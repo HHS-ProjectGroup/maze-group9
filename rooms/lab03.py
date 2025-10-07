@@ -1,7 +1,7 @@
 import sys
 from dataclasses import dataclass, field
 from persistence import save_state, clear_state, reset_state
-from rooms.constants import ITEM_6, ROOM5, ROOM6
+from constants import ITEM_6, ROOM5, ROOM6
 
 DESTINATION = ROOM5
 RESULT = "Caesar"
