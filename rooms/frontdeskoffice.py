@@ -9,6 +9,7 @@
 import random
 import sys
 from persistence import save_state, clear_state, reset_state
+from constants import ITEM_2
 
 
 def _ensure_front_desk_state(state):
@@ -86,7 +87,7 @@ def _print_commands(state):
     print("\nAvailable commands:")
     if not state["visited"]["frontdeskoffice"]:
         print("- answer <a/b/c/d>    : Answer the current question.")
-    if state["visited"]["frontdeskoffice"] and state["frontdesk_reward_spawned"] and "battery" not in state["inventory"]:
+    if state["visited"]["frontdeskoffice"] and state["frontdesk_reward_spawned"] and ITEM_2 not in state["inventory"]:
         print("- take battery         : Pick up the battery reward.")
     print("- leave                : Exit to the corridor.")
     print("- ?                    : Show this help message.")
@@ -163,9 +164,9 @@ def enterFrontDeskOffice(state):
 
         if command.startswith("take "):
             item = command[5:].strip().lower()
-            if item == "battery":
+            if item == ITEM_2:
                 if state["visited"]["frontdeskoffice"] and state["frontdesk_reward_spawned"]:
-                    if "battery" in state["inventory"]:
+                    if ITEM_2 in state["inventory"]:
                         print("You already took the battery.")
                     else:
                         print("🔋 You take the battery and store it in your backpack.")
