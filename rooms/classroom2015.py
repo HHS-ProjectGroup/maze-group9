@@ -6,7 +6,7 @@
 # Date: Sept 2025
 # -----------------------------------------------------------------------------
 
-import sys
+import sys, os
 from persistence import save_state, clear_state, reset_state
 from rooms.utils import display_status
 from constants import ITEM_2, ITEM_3, ROOM1, ROOM3
