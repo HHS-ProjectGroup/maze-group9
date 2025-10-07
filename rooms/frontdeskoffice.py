@@ -9,13 +9,14 @@
 import random
 import sys
 from persistence import save_state, clear_state, reset_state
+from constants import ITEM_2, ROOM2
 
 
 def _ensure_front_desk_state(state):
     # Initialize persistent state for this room
-    if "frontdeskoffice" not in state["visited"]:
-        state["visited"]["frontdeskoffice"] = False
-    if "frontdesk_question" not in state:
+    if ROOM2 not in state["visited"]:
+        state["visited"][ROOM2] = False
+    if ROOM2 not in state:
         state["frontdesk_question"] = None  # will store dict with q, options, correct ('a'..'d')
     if "frontdesk_reward_spawned" not in state:
         state["frontdesk_reward_spawned"] = False
@@ -62,7 +63,7 @@ def _print_room_header(state):
     print("\nA holographic desk shimmers faintly, and a Cyber Receptionist flickers with glitchy static.")
     print("\nBehind the desk, a sealed access panel hums silently.")
 
-    if not state["visited"]["frontdeskoffice"]:
+    if not state["visited"][ROOM2]:
         print("\n[Cyber Receptionist]: “Weeeelc-co-meee, challenger. To rec-ceeeive powerrrr, you must answerrrr… correctly.”")
 
 
@@ -84,10 +85,10 @@ def _show_question(state):
 
 def _print_commands(state):
     print("\nAvailable commands:")
-    if not state["visited"]["frontdeskoffice"]:
+    if not state["visited"][ROOM2]:
         print("- answer <a/b/c/d>    : Answer the current question.")
-    if state["visited"]["frontdeskoffice"] and state["frontdesk_reward_spawned"] and "battery" not in state["inventory"]:
-        print("- take battery         : Pick up the battery reward.")
+    if state["visited"][ROOM2] and state["frontdesk_reward_spawned"] and ITEM_2 not in state["inventory"]:
+        print(f"- take {ITEM_2}         : Pick up the {ITEM_2} reward.")
     print("- leave                : Exit to the corridor.")
     print("- ?                    : Show this help message.")
     print("- look around          : Reprint description and your options.")
@@ -102,7 +103,7 @@ def enterFrontDeskOffice(state):
     _print_room_header(state)
 
     # If solved previously, show post-completion greeting and commands, no questions
-    if state["visited"]["frontdeskoffice"]:
+    if state["visited"][ROOM2]:
         print("\n[Cyber Receptionist]: “W-e-eee...lc---ome b...ba-ck, ch-ch-challeng-er...”")
         _print_commands(state)
     else:
@@ -122,19 +123,19 @@ def enterFrontDeskOffice(state):
 
         if command == "look around":
             _print_room_header(state)
-            if not state["visited"]["frontdeskoffice"]:
+            if not state["visited"][ROOM2]:
                 _show_question(state)
             _print_commands(state)
             continue
 
         if command == "leave" or command == "go corridor" or command == "back":
             print("You step away from the holographic desk and return to the corridor.")
-            state["previous_room"] = "frontdeskoffice"
+            state["previous_room"] = ROOM2
             return "corridor"
 
         if command.startswith("answer "):
             choice = command.split(" ", 1)[1].strip()
-            if state["visited"]["frontdeskoffice"]:
+            if state["visited"][ROOM2]:
                 print("You already proved your worth. No more questions.")
                 continue
             if choice not in ["a", "b", "c", "d"]:
@@ -146,34 +147,34 @@ def enterFrontDeskOffice(state):
                 q = state["frontdesk_question"]
             if choice == q["correct"]:
                 print("\n[Cyber Receptionist]: “Corrrrrect... ch-challenger. Acc-cccept your re-ward...”")
-                print("The Cyber Receptionist extends a shimmering holo-hand and gently places a battery on the desk in front of you.")
-                print("The battery hums softly with stored energy.")
-                # Spawn battery in the room (once)
+                print(f"The Cyber Receptionist extends a shimmering holo-hand and gently places a {ITEM_2} on the desk in front of you.")
+                print(f"The {ITEM_2} hums softly with stored energy.")
+                # Spawn {ITEM_2} in the room (once)
                 state["frontdesk_reward_spawned"] = True
-                state["visited"]["frontdeskoffice"] = True
-                # After success, no new questions; show that battery can be taken
+                state["visited"][ROOM2] = True
+                # After success, no new questions; show that {ITEM_2} can be taken
                 _print_commands(state)
             else:
                 print("\n[Cyber Receptionist]: “Inc-c-c-correct. You are unworthy. EJECTING…”")
                 print("You are flung out into the corridor!")
                 state["frontdesk_question"] = None  # ensure a fresh random on next entry
-                state["previous_room"] = "frontdeskoffice"
+                state["previous_room"] = ROOM2
                 return "corridor"
             continue
 
         if command.startswith("take "):
             item = command[5:].strip().lower()
-            if item == "battery":
-                if state["visited"]["frontdeskoffice"] and state["frontdesk_reward_spawned"]:
-                    if "battery" in state["inventory"]:
-                        print("You already took the battery.")
+            if item == ITEM_2:
+                if state["visited"][ROOM2] and state["frontdesk_reward_spawned"]:
+                    if ITEM_2 in state["inventory"]:
+                        print(f"You already took the {ITEM_2}.")
                     else:
-                        print("🔋 You take the battery and store it in your backpack.")
-                        state["inventory"].append("battery")
-                        # Battery picked up; keep reward flag so no new battery spawns
+                        print(f"🔋 You take the {ITEM_2} and store it in your backpack.")
+                        state["inventory"].append(ITEM_2)
+                        # {ITEM_2} picked up; keep reward flag so no new {ITEM_2} spawns
                     _print_commands(state)
                 else:
-                    print("There is no battery available right now.")
+                    print(f"There is no {ITEM_2} available right now.")
             else:
                 print(f"There is no '{item}' to take here.")
             continue
