@@ -9,18 +9,19 @@
 import sys
 from persistence import save_state, clear_state, reset_state
 from rooms.utils import display_status
+from constants import ITEM_2, ITEM_3, ROOM1, ROOM3
 
 
 def enterClassroom2015(state):
     # --- persistent state for conversation only ---
     room_states = state.setdefault("room_states", {})
-    room = room_states.setdefault("classroom2015", {
+    room = room_states.setdefault(ROOM3, {
         "stage": 0,        # 0 = not started, 1..N = questions
         "missteps": 0,
         "conversation_active": False,
     })
 
-    print("\n🏫 You step into Classroom 2.015.")
+    print(f"\n🏫 You step into {ROOM3}.")
     print("Holographic desks shimmer beside ergonomic chairs. A larger desk stands at the front,")
     print("and wide windows flood the room with light. In the corner, a janitor cyborg sits rigidly.")
 
@@ -51,7 +52,7 @@ def enterClassroom2015(state):
         3: {
             "prompt": '🤖 "Purpose of interaction?"',
             "options": {
-                "a": "Polite: 'I need a yellow keycard to continue, please.'",
+                "a": f"Polite: 'I need a {ITEM_3} to continue, please.'",
                 "b": "Vague: 'Stuff. Whatever you’ve got.'",
                 "c": "Aggressive: 'Give it now or else.'",
                 "d": "Techy: 'Let me override your safeties.'",
@@ -66,13 +67,13 @@ def enterClassroom2015(state):
     def handle_help():
         print("\nAvailable commands:")
         print("- look around           : Examine the room.")
-        print("- approach cyborg       : Begin or continue the conversation (requires battery).")
+        print(f"- approach cyborg       : Begin or continue the conversation (requires {ITEM_2}).")
         print("- talk                  : Re-show the current question.")
         print("- choose <a|b|c|d>      : Pick an answer.")
         print("- search large desk     : Inspect the large desk.")
-        print("- take yellow keycard   : Pick up the keycard (once visible).")
+        print(f"- take {ITEM_3}   : Pick up the keycard (once visible).")
         print("- check inventory       : See what you are carrying.")
-        print("- go corridor/back/leave: Exit the room.")
+        print(f"- go {ROOM1}/back/leave: Exit the room.")
         print("- display status        : Show your inventory, location, and visited rooms.")
         print("- pause                 : Save and exit (pause the game).")
         print("- quit                  : Quit without saving.")
@@ -98,8 +99,8 @@ def enterClassroom2015(state):
         return False
 
     def place_keycard_on_desk():
-        if not has_item("yellow keycard"):
-            print("\n🤖 The cyborg opens a panel and places a **yellow keycard** on the large desk.")
+        if not has_item(ITEM_3):
+            print(f"\n🤖 The cyborg opens a panel and places a {ITEM_3} on the large desk.")
         else:
             print("🤖 'Resource already provided.'")
 
@@ -113,8 +114,8 @@ def enterClassroom2015(state):
             print("🤖 He gestures to the desk. 'We are done here.'")
 
     def start_conversation():
-        if not has_item("battery"):
-            print('\n🤖 "I need more energy." (You need a battery in your inventory to talk to him.)')
+        if not has_item(ITEM_2):
+            print(f'\n🤖 "I need more energy." (You need a {ITEM_2} in your inventory to talk to him.)')
             return
         if not room["conversation_active"]:
             room["conversation_active"] = True
@@ -134,7 +135,7 @@ def enterClassroom2015(state):
         if choice == q["correct"]:
             print(f"\n✅ {q['success']}")
             room["stage"] += 1
-            if room["stage"] == 4 and not has_item("yellow keycard"):
+            if room["stage"] == 4 and not has_item(ITEM_3):
                 # grant keycard by placing it on desk
                 place_keycard_on_desk()
         else:
@@ -145,7 +146,7 @@ def enterClassroom2015(state):
                 room["stage"] = 1
                 room["missteps"] = 0
                 room["conversation_active"] = False
-                return "corridor"
+                return ROOM1
             else:
                 show_question()
 
@@ -155,9 +156,9 @@ def enterClassroom2015(state):
 
         if command == "look around":
             print("\nYou see holographic desks, a large desk, big windows, and the cyborg in the corner.")
-            if not has_item("yellow keycard") and room["stage"] >= 4:
-                print("On the desk lies a **yellow keycard**.")
-            print("- Possible exits: corridor")
+            if not has_item(ITEM_3) and room["stage"] >= 4:
+                print(f"On the desk lies a {ITEM_3}.")
+            print(f"- Possible exits: {ROOM1}")
             print("- Your inventory:", state["inventory"])
 
         elif command == "approach cyborg":
@@ -177,16 +178,16 @@ def enterClassroom2015(state):
                 return result
 
         elif command == "search large desk":
-            if not has_item("yellow keycard") and room["stage"] >= 4:
-                print("On a pile of holo-slates rests a **yellow keycard**. You can take it.")
+            if not has_item(ITEM_3) and room["stage"] >= 4:
+                print(f"On a pile of holo-slates rests a {ITEM_3}. You can take it.")
             else:
                 print("The desk has papers and cables, but nothing special.")
 
         elif command.startswith("take "):
             item = command[5:].strip().lower()
-            if item in ["yellow keycard", "keycard"] and not has_item("yellow keycard") and room["stage"] >= 4:
-                print("🔑 You take the yellow keycard and put it in your backpack.")
-                state["inventory"].append("yellow keycard")
+            if item in [ITEM_3, "keycard"] and not has_item(ITEM_3) and room["stage"] >= 4:
+                print(f"🔑 You take the {ITEM_3} and put it in your backpack.")
+                state["inventory"].append(ITEM_3)
             else:
                 print(f"There is no '{item}' here to take.")
 
@@ -195,16 +196,16 @@ def enterClassroom2015(state):
 
         elif command.startswith("go "):
             dest = command[3:].strip()
-            if dest in ["corridor", "back", "leave"]:
-                print("🚪 You leave the classroom and return to the corridor.")
-                return "corridor"
+            if dest in [ROOM1, "back", "leave"]:
+                print(f"🚪 You leave the classroom and return to the {ROOM1}.")
+                return ROOM1
             else:
                 print(f"❌ You can’t go to '{dest}' from here.")
 
         elif command in ["leave", "back"]:
-            print("🚪 You leave the classroom and return to the corridor.")
-            state["visited"]["classroom2015"] = True
-            return "corridor"
+            print(f"🚪 You leave the classroom and return to the {ROOM1}.")
+            state["visited"][ROOM3] = True
+            return ROOM1
 
         elif command == "?":
             handle_help()
