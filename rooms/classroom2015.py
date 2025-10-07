@@ -8,7 +8,7 @@
 
 import sys
 from persistence import save_state, clear_state, reset_state
-from rooms.utils import handle_display_status, display_status
+from rooms.utils import display_status
 
 
 def enterClassroom2015(state):

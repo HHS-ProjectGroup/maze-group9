@@ -7,13 +7,13 @@ from rooms import (
     enterLab01,
     enterProjectRoom3,
     enterStudyLandscape,
-
 )
 from persistence import load_state, get_default_state
 from leaderboard import print_leaderboard, append_result, GameTimer
 
 
 state = get_default_state()
+
 def _get_player_name() -> str:
     # Avoid blocking test automation
     import sys
@@ -104,8 +104,9 @@ if __name__ == "__main__":
     try:
         main(state)
     except:pass
+
     finally:
-    seconds = timer.stop()
+        seconds = timer.stop()
     name = _get_player_name()
     # Ensure state is defined and score exists
     try:
