@@ -1,8 +1,9 @@
 import sys
 from dataclasses import dataclass, field
 from persistence import save_state, clear_state, reset_state
+from rooms.constants import ITEM_6, ROOM5, ROOM6
 
-DESTINATION = "corridor"
+DESTINATION = ROOM5
 RESULT = "Caesar"
 
 
@@ -106,7 +107,7 @@ def start_game() -> Terminal:
 
 
 def enterLab03(state: dict):
-    print("\n🏗️ You enter Lab.")
+    print(f"\n🏗️ You enter {ROOM6}.")
     print(
         "Several tables are pushed together, covered in papers, laptops, and half-eaten snacks."
     )
@@ -120,7 +121,7 @@ def enterLab03(state: dict):
         print(
             "The walls are covered in sticky notes, whiteboards are full of pseudocode and diagrams."
         )
-        if not state["visited"].get("lab"):
+        if not state["visited"].get(ROOM6):
             print("Near the snack table, one student holds up a fruit and says:")
             print("'You know what they say... which fruit keeps the doctor away?'")
             print(
@@ -136,9 +137,9 @@ def enterLab03(state: dict):
 
     def handle_help():
         """List available commands."""
-        print("\nAvailable commands:") 
+        print("\nAvailable commands:")
         print("- look around         : Examine the room for clues.")
-        if not state["visited"]["lab"]:
+        if not state["visited"][ROOM6]:
             print("- enter the <pc>      : You may find something useful in it.")
         print("- go corridor / back  : Leave the room and return to the corridor.")
         print("- ?                   : Show this help message.")
@@ -147,21 +148,21 @@ def enterLab03(state: dict):
 
     def handle_go(destination):
         """Handle movement out of the room."""
-        if destination in ["corridor", "back"]:
+        if destination in [ROOM5, "back"]:
             print("You step away from the lively room and return to the corridor.")
-            return "corridor"
+            return ROOM5
         else:
             print(f"❌ You can't go to '{destination}' from here.")
             return None
 
     def handle_result(state):
         s_ = input("Have you received the security key?\n").strip().lower()
-        if s_.startswith("no"):
+        if s_.lower().startswith("no"):
             return
 
         s_ = input("Type the result:\n")
         if s_ == RESULT:
-            state["inventory"].append("security_key")
+            state["inventory"].append(ITEM_6)
 
     def enter_the_pc(state) -> str | None:
         """So we gotta figure smth out"""
@@ -193,7 +194,7 @@ def enterLab03(state: dict):
         if command == "look around":
             handle_look()
 
-        elif command == "?":
+        elif command in ["?", "help"]:
             handle_help()
 
         elif command.startswith("go "):
@@ -215,7 +216,9 @@ def enterLab03(state: dict):
                 sys.exit()
 
         elif command == "quit":
-            print("👋 You close your notebook and leave the project behind. Progress not saved.")
+            print(
+                "👋 You close your notebook and leave the project behind. Progress not saved."
+            )
             try:
                 clear_state()
                 reset_state(state)
