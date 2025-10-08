@@ -1,5 +1,5 @@
 import pytest
-from rooms.projectroom3 import enterProjectRoom3, ENTRY_KEYCARD
+from rooms.projectroom3 import enter_projectroom3, ENTRY_KEYCARD
 from tests.e2e.runner import run_game_with_commands
 
 ACCESSIBILITY_SCENARIOS = [
@@ -37,7 +37,7 @@ class TestProjectRoom3:
         default_blank_state_for_startup["flags"] = {'projectroom3_solved': True, 'projectroom3_reward_taken': False}
         default_blank_state_for_startup["inventory"].append(ENTRY_KEYCARD)
         result, output, final_state = run_game_with_commands(
-            commands, enterProjectRoom3, default_blank_state_for_startup, capsys
+            commands, enter_projectroom3, default_blank_state_for_startup, capsys
         )
 
         assert result == expected_room

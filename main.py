@@ -1,17 +1,17 @@
 import os
 from rooms import (
-    enterClassroom2015,
-    enterCorridor,
-    enterFrontDeskOffice,
-    enterLab03,
-    enterLab01,
-    enterProjectRoom3,
-    enterStudyLandscape,
-
+    enter_classroom2015,
+    enter_corridor,
+    enter_frontdeskoffice,
+    enter_lab03,
+    enter_lab01,
+    enter_projectroom3,
+    enter_studylandscape,
+    constants
 )
+from rooms.constants import ROOM1, ROOM2, ROOM3, ROOM4, ROOM5, ROOM6, ROOM7
 from persistence import load_state, get_default_state
 from leaderboard import print_leaderboard, append_result, GameTimer
-
 
 state = get_default_state()
 def _get_player_name() -> str:
@@ -57,31 +57,31 @@ def main(state):
         current = state["current_room"]
 
         # Selim
-        if current == "corridor":
-            state["current_room"] = enterCorridor(state)
-
-        # Alex
-        elif current == "studylandscape":
-            state["current_room"] = enterStudyLandscape(state)
-
-        # Gleb
-        elif current == "lab03":
-            state["current_room"] = enterLab03(state)
+        if current == ROOM1:
+            state["current_room"] = enter_corridor(state)
 
         # Arda
-        elif current == "frontdeskoffice":
-            state["current_room"] = enterFrontDeskOffice(state)
+        elif current == ROOM2:
+            state["current_room"] = enter_frontdeskoffice(state)
 
         # Sil
-        elif current == "classroom2015":
-            state["current_room"] = enterClassroom2015(state)
+        elif current == ROOM3:
+            state["current_room"] = enter_classroom2015(state)
 
         # Bianca
-        elif current == "projectroom3":
-            state["current_room"] = enterProjectRoom3(state)
+        elif current == ROOM4:
+            state["current_room"] = enter_projectroom3(state)
 
-        elif current == "lab01":
-            state["current_room"] = enterLab01(state)
+        # Alex
+        elif current == ROOM5:
+            state["current_room"] = enter_studylandscape(state)
+
+        # Gleb
+        elif current == ROOM6:
+            state["current_room"] = enter_lab03(state)
+
+        elif current == ROOM7:
+            state["current_room"] = enter_lab01(state)
 
         else:
             print("Unknown room. Exiting game.")

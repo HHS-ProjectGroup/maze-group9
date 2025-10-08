@@ -1,5 +1,5 @@
 import pytest
-from rooms.lab03 import enterLab03
+from rooms.lab03 import enter_lab03
 from tests.e2e.runner import run_game_with_commands
 
 ACCESSIBILITY_SCENARIOS = [
@@ -23,7 +23,7 @@ class TestLab:
     ):
         default_blank_state_for_startup["visited"]["lab"] = False
         result, output, final_state = run_game_with_commands(
-            commands, enterLab03, default_blank_state_for_startup, capsys
+            commands, enter_lab03, default_blank_state_for_startup, capsys
         )
 
         assert result == expected_room

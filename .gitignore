@@ -149,3 +149,5 @@ coverage.xml
 .hypothesis/
 .pytest_cache/
 
+game_state.db
+leaderboard.csv

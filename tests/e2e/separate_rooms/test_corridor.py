@@ -1,5 +1,5 @@
 import pytest
-from rooms.corridor import enterCorridor
+from rooms.corridor import enter_corridor
 
 from tests.e2e.runner import run_game_with_commands
 
@@ -19,7 +19,7 @@ class TestCorridor:
         self, default_blank_state_for_startup, commands, expected_room, capsys
     ):
         result, output, final_state = run_game_with_commands(
-            commands, enterCorridor, default_blank_state_for_startup, capsys
+            commands, enter_corridor, default_blank_state_for_startup, capsys
         )
 
         assert result == expected_room

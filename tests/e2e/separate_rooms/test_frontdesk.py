@@ -1,5 +1,5 @@
 import pytest
-from rooms.frontdeskoffice import enterFrontDeskOffice
+from rooms.frontdeskoffice import enter_frontdeskoffice
 from tests.e2e.runner import run_game_with_commands
 
 ACCESSIBILITY_SCENARIOS = [
@@ -53,7 +53,7 @@ class TestFrontDesk:
     ):
         default_blank_state_for_startup["current_room"] = "frontdeskoffice"
         result, output, final_state = run_game_with_commands(
-            commands, enterFrontDeskOffice, default_blank_state_for_startup, capsys
+            commands, enter_frontdeskoffice, default_blank_state_for_startup, capsys
         )
 
         if final_state["frontdesk_question"]:

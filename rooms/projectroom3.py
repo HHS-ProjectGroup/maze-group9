@@ -10,7 +10,8 @@
 import sys
 import random
 from persistence import save_state, clear_state, reset_state
-from constants import ITEM_3, ITEM_4, ROOM1, ROOM4
+from .constants import ITEM_3, ITEM_4, ROOM1, ROOM4
+from .utils import display_status
 
 ENTRY_KEYCARD = ITEM_3  # item needed to unlock the door
 REWARD_ITEM   = ITEM_4  # reward given after solving
@@ -24,7 +25,7 @@ WORDS = [
 
 MAX_ATTEMPTS  = 6            # wrong guesses allowed
 
-def enterProjectRoom3(state):
+def enter_projectroom3(state):
     state.setdefault("visited", {})
     state["visited"].setdefault(ROOM4, False)
 
@@ -79,6 +80,7 @@ def enterProjectRoom3(state):
         print(f"- take {REWARD_ITEM.lower()}               : Take the reward (after success).")
         print("- go corridor / back          : Leave the room.")
         print("- ?                           : Show this help.")
+        print("- display status              : Show your inventory, location, and visited rooms.")
         print("- pause                        : Save and exit (pause the game).")
         print("- quit                        : Quit without saving.")
 
@@ -216,6 +218,9 @@ def enterProjectRoom3(state):
 
         elif command == "?": #show available commands
             show_help()
+
+        elif command == "display status":
+            display_status(state)
 
         elif command == "start challenge": #begin the hangman puzzlr
             start_challenge()

@@ -6,13 +6,13 @@
 # Date: Sept 2025
 # -----------------------------------------------------------------------------
 
-import sys, os
+import sys
 from persistence import save_state, clear_state, reset_state
 from rooms.utils import display_status
-from constants import ITEM_2, ITEM_3, ROOM1, ROOM3
+from .constants import ITEM_2, ITEM_3, ROOM1, ROOM3
 
 
-def enterClassroom2015(state):
+def enter_classroom2015(state):
     # --- persistent state for conversation only ---
     room_states = state.setdefault("room_states", {})
     room = room_states.setdefault(ROOM3, {

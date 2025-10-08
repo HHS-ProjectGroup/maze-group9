@@ -9,7 +9,8 @@
 import random
 import sys
 from persistence import save_state, clear_state, reset_state
-from constants import ITEM_2, ROOM2
+from .constants import ITEM_2, ROOM2
+from .utils import display_status
 
 
 def _ensure_front_desk_state(state):
@@ -92,11 +93,12 @@ def _print_commands(state):
     print("- leave                : Exit to the corridor.")
     print("- ?                    : Show this help message.")
     print("- look around          : Reprint description and your options.")
+    print("- display status       : Show your inventory, location, and visited rooms.")
     print("- pause                : Save and exit (pause the game).")
     print("- quit                 : Quit without saving.")
 
 
-def enterFrontDeskOffice(state):
+def enter_frontdeskoffice(state):
     _ensure_front_desk_state(state)
 
     # Always show header on entering
@@ -177,6 +179,10 @@ def enterFrontDeskOffice(state):
                     print(f"There is no {ITEM_2} available right now.")
             else:
                 print(f"There is no '{item}' to take here.")
+            continue
+
+        if command == "display status":
+            display_status(state)
             continue
 
         if command == "pause":

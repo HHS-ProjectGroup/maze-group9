@@ -7,6 +7,7 @@
 # -----------------------------------------------------------------------------
 
 import os
+import sys
 from typing import Any
 
 
@@ -67,11 +68,19 @@ def handle_help_generic(
     )
     print("- go <room name>      : Move to another room. Example: go classroom2015")
     print("- ?                   : Show this help message.")
+    print("- display status      : Show your inventory, location, and visited rooms.")
     print("- pause               : Save and exit (pause the game).")
     print("- quit                : Quit without saving.")
-    for command_name, description in specifics:
+    for command_name, description in specifics.items():
         print(
             f"- {command_name.lower()}"
             + " " * (20 - len(command_name))
             + f": {description}"
         )
+
+def take_damage(state):
+    print("\nYou lost 1 HP.")
+    state["health"] -= 1
+    if state["health"] == 0:
+        print("You died. The game is over.")
+        sys.exit()

@@ -7,5 +7,5 @@ In our regard, it insures that the game is playable in the first place and prefe
 
 ## Mechanism implementation
 
-General idea is too feed game input from the start and match the output.  
+General idea is to feed game input from the start and match the output.  
 If a certain chain of commands leads to the end, then everything is good.  

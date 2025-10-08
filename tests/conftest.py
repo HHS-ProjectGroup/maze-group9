@@ -1,5 +1,5 @@
 import random
-from rooms.corridorquiz import generate_quadratic_inequality
+from rooms.corridor import generate_quadratic_inequality
 import copy
 import pytest
 

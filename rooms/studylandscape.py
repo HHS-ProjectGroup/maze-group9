@@ -8,7 +8,8 @@
 
 import sys
 from persistence import save_state, clear_state, reset_state
-
+from .constants import ITEM_4,ITEM_5
+from .utils import display_status
 #Bianca's room item. It is needed in order to get the access to the StudyLandscape
 REWARD_ITEM = "Hard Disk"
 
@@ -34,7 +35,7 @@ approach_destinations = {
 }
 
 #the enter scrpit
-def enterStudyLandscape(state):
+def enter_studylandscape(state):
 
     print("\n🛋️ You step into the study landscape.")
     print("Soft chairs and tables to work and chat with fellow students and a quiet hum of a coffee machine.")
@@ -127,6 +128,7 @@ def enterStudyLandscape(state):
         print(f"- approach <thing>    : {approach_destinations} ")
         print("- go corridor / back  : Return to the main corridor.")
         print("- ?                   : Show this help message.")
+        print("- display status      : Show your inventory, location, and visited rooms.")
         print("- pause               : Save and exit (pause the game).")
         print("- quit                : Quit without saving.")
         print(f"Current room is {state['current_room']}.")
@@ -177,6 +179,9 @@ def enterStudyLandscape(state):
             handle_help()
             print_minimap(state)
 
+        elif command == "display status":
+            display_status(state)
+
         elif command.startswith("go "):
             destination = command[3:].strip()
             result = handle_go(destination)
@@ -217,5 +222,5 @@ if __name__ == "__main__":
         "inventory": ["Hard Disk"],
         "health": 3,
     }
-    enterStudyLandscape(state)
+    enter_studylandscape(state)
 

@@ -1,7 +1,8 @@
 import sys
 from dataclasses import dataclass, field
 from persistence import save_state, clear_state, reset_state
-from constants import ITEM_6, ROOM5, ROOM6
+from .constants import ITEM_6, ROOM5, ROOM6
+from .utils import display_status
 
 DESTINATION = ROOM5
 RESULT = "Caesar"
@@ -106,7 +107,7 @@ def start_game() -> Terminal:
     return term
 
 
-def enterLab03(state: dict):
+def enter_lab03(state: dict):
     print(f"\n🏗️ You enter {ROOM6}.")
     print(
         "Several tables are pushed together, covered in papers, laptops, and half-eaten snacks."
@@ -143,6 +144,7 @@ def enterLab03(state: dict):
             print("- enter the <pc>      : You may find something useful in it.")
         print("- go corridor / back  : Leave the room and return to the corridor.")
         print("- ?                   : Show this help message.")
+        print("- display status      : Show your inventory, location, and visited rooms.")
         print("- pause               : Save and exit (pause the game).")
         print("- quit                : Quit without saving.")
 
@@ -207,6 +209,9 @@ def enterLab03(state: dict):
             result: str | None = enter_the_pc(state=state)
             if result:
                 return result
+
+        elif command == "display status":
+            display_status(state)
 
         elif command == "pause":
             print("⏸️ Game paused. Your progress has been saved.")

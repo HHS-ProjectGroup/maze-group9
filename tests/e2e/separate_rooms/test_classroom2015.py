@@ -1,5 +1,5 @@
 import pytest
-from rooms.classroom2015 import enterClassroom2015
+from rooms.classroom2015 import enter_classroom2015
 from tests.e2e.runner import run_game_with_commands
 
 ACCESSIBILITY_SCENARIOS = [
@@ -47,7 +47,7 @@ class TestClassRoom2015:
     ):
         default_blank_state_for_startup["current_room"] = "classroom2015"
         result, output, final_state = run_game_with_commands(
-            commands, enterClassroom2015, default_blank_state_for_startup, capsys
+            commands, enter_classroom2015, default_blank_state_for_startup, capsys
         )
 
         assert result == expected_room
@@ -63,7 +63,7 @@ class TestClassRoom2015:
         default_blank_state_for_startup["inventory"].append("battery")
         default_blank_state_for_startup["current_room"] = "classroom2015"
         result, output, final_state = run_game_with_commands(
-            commands, enterClassroom2015, default_blank_state_for_startup, capsys
+            commands, enter_classroom2015, default_blank_state_for_startup, capsys
         )
 
         assert result == expected_room
