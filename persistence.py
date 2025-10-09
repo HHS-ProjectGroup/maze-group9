@@ -97,6 +97,10 @@ def get_default_state() -> Dict[str, Any]:
         },
         "inventory": [],
         "health": 3,
+        # New fields to persist across sessions
+        "score": 0,
+        "elapsed_seconds": 0.0,
+        "game_beaten": False,
     }
 
 

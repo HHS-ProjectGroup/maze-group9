@@ -11,7 +11,7 @@ from persistence import save_state, clear_state, reset_state
 from .constants import ITEM_4,ITEM_5
 from .utils import display_status
 #Bianca's room item. It is needed in order to get the access to the StudyLandscape
-REWARD_ITEM = "Hard Disk"
+REWARD_ITEM = ITEM_4
 
 #the list of all the rooms
 rooms = ["Classroom2015", "Corridor", "FrontDeskOffice", "Lab03", "Lab01", "ProjectRoom3", "StudyLandscape"]
@@ -42,7 +42,7 @@ def enter_studylandscape(state):
     print("It feels like a place to work but also to pause and catch your breath.")
 
     if REWARD_ITEM in state["inventory"]:
-        print("Hard Disk is in your inventory")
+        print(f"{ITEM_4} is in your inventory")
         state["current_room"] = "StudyLandscape"
     else:
         print("Access denied")
@@ -219,7 +219,7 @@ if __name__ == "__main__":
             "frontdeskoffice": False,
             "corridor": [False, 3],  # the number of encounters left
         },
-        "inventory": ["Hard Disk"],
+        "inventory": [f"{ITEM_4}"],
         "health": 3,
     }
     enter_studylandscape(state)

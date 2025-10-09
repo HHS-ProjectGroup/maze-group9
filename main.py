@@ -10,7 +10,7 @@ from rooms import (
     constants
 )
 from rooms.constants import ROOM1, ROOM2, ROOM3, ROOM4, ROOM5, ROOM6, ROOM7
-from persistence import load_state, get_default_state
+from persistence import load_state, get_default_state, save_state
 from leaderboard import print_leaderboard, append_result, GameTimer
 
 state = get_default_state()
@@ -92,7 +92,7 @@ if __name__ == "__main__":
     # Show leaderboard before starting
     print_leaderboard()
 
-    # Start game timer
+    # Start game timer for this session
     timer = GameTimer()
     timer.start()
 
@@ -101,17 +101,43 @@ if __name__ == "__main__":
     if loaded:
         state = loaded
         print("[Loaded saved game state from database]")
+
     try:
         main(state)
-    except:
+    except BaseException:
+        # Swallow SystemExit from room handlers (pause/quit) and any other exceptions
         pass
     finally:
-     seconds = timer.stop()
-     name = _get_player_name()
-    # Ensure state is defined and score exists
-    try:
-        score = int(state.get("score", 0)) if isinstance(state, dict) else 0
-    except Exception:
-        score = 0
-    append_result(name=name, score=score, seconds=float(seconds))
-    print("\nYour result has been saved to the leaderboard. Thank you for playing!")
+        # Update accumulated elapsed time into state and persist
+        try:
+            session_seconds = float(timer.stop())
+        except Exception:
+            session_seconds = 0.0
+        try:
+            prev = float(state.get("elapsed_seconds", 0.0)) if isinstance(state, dict) else 0.0
+        except Exception:
+            prev = 0.0
+        total_elapsed = max(0.0, prev + session_seconds)
+        if isinstance(state, dict):
+            state["elapsed_seconds"] = total_elapsed
+            # Ensure score key exists for persistence
+            state.setdefault("score", 0)
+        # Save the latest state (including time/score) so pause/quit resumes correctly
+        try:
+            save_state(state)
+        except Exception:
+            pass
+
+        # Only record leaderboard when the game has been beaten
+        beaten = bool(state.get("game_beaten", False)) if isinstance(state, dict) else False
+        if beaten:
+            name = _get_player_name()
+            try:
+                score_val = int(state.get("score", 0)) if isinstance(state, dict) else 0
+            except Exception:
+                score_val = 0
+            append_result(name=name, score=score_val, seconds=float(total_elapsed))
+            print("\nYour result has been saved to the leaderboard. Thank you for playing!")
+        else:
+            # Don’t touch leaderboard on pause/quit before victory
+            pass
