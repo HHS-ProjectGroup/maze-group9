@@ -10,8 +10,9 @@ import random
 import sys
 import re
 from persistence import save_state, clear_state, reset_state
+from rooms.texts import FRNT_DSK_FAILED_CAPCHA, FRNT_DSK_LOOK_AROUND, FRNT_DSK_SOLVED_CAPCHA, type_rich
 from .constants import ITEM_2, ROOM2
-from .utils import display_status
+from .utils import display_status, handle_help_generic
 
 
 def _ensure_front_desk_state(state):
@@ -109,13 +110,23 @@ def _legend():
 
 
 def _print_room_header(state):
-    print("\nYou step into the Front Desk Office.")
-    print("\nA holographic desk shimmers faintly, and a Cyber Receptionist flickers with glitchy static.")
-    print("\nBehind the desk, a sealed access panel hums silently.")
+    if state["visited"][ROOM2]:
+        type_rich("""The desk looks the same as before, but the holographic glow has dimmed.
+The air smells faintly of burnt circuitry.
+The coffee is cold now.
+The terminal still sits there, logged out and unresponsive — like the room itself is done talking.
+The battery slot under the desk is empty.""")
 
-    if not state["visited"][ROOM2]:
-        print("\n[Cyber Receptionist]: ‘Welcome, challenger. Solve the chess puzzle to receive power.’")
+    else:
+     type_rich("""You step into the Front Desk Office.
+The air feels warmer here, as if the ventilation is still running.
+A single desk stands in the center, covered with faint holographic residue.
+A terminal hums quietly — still logged in, its display frozen on a half-written email.
+Papers and notes are scattered around; a coffee cup rests by the keyboard, still half full.
+Whoever worked here must’ve left in a hurry.""")
 
+def _look_around():
+    FRNT_DSK_LOOK_AROUND()
 
 def _pick_new_puzzle(state):
     pool = _puzzle_pool()
@@ -207,7 +218,6 @@ def enter_frontdeskoffice(state):
 
     # If solved previously, show post-completion greeting and commands, no puzzles
     if state["visited"][ROOM2]:
-        print("\n[Cyber Receptionist]: ‘Welcome back, solver.’")
         _print_commands(state)
     else:
         # First-time entry: select or show a puzzle
@@ -226,24 +236,24 @@ def enter_frontdeskoffice(state):
             continue
 
         if command == "look around":
-            _print_room_header(state)
+            _look_around()
             if not state["visited"][ROOM2]:
                 _show_puzzle(state)
             _print_commands(state)
             continue
 
         if command == "leave" or command == "go corridor" or command == "back":
-            print("You step away from the holographic desk and return to the corridor.")
+            type_rich("You step away from the holographic desk and return to the corridor.")
             state["previous_room"] = ROOM2
             return "corridor"
 
         if command.startswith("answer "):
             if state["visited"][ROOM2]:
-                print("You already proved your worth. No more puzzles.")
+                type_rich("No more questions to answer.")
                 continue
             parsed = _parse_answer(raw)
             if not parsed:
-                print("Please answer like: answer White rook A1 to A7")
+                type_rich("Please answer like: answer White rook A1 to A7")
                 _legend()
                 continue
             p = state["frontdesk_puzzle"]
@@ -265,8 +275,11 @@ def enter_frontdeskoffice(state):
                 # Spawn {ITEM_2} in the room (once)
                 state["frontdesk_reward_spawned"] = True
                 state["visited"][ROOM2] = True
+                # After success, no new questions; show that {ITEM_2} can be taken
                 _print_commands(state)
             else:
+                FRNT_DSK_FAILED_CAPCHA()
+                state["frontdesk_question"] = None  # ensure a fresh random on next entry
                 print("\n[Cyber Receptionist]: ‘Incorrect. EJECTING…’")
                 print("You are flung out into the corridor!")
                 state["frontdesk_puzzle"] = None  # ensure a fresh random on next entry
@@ -279,16 +292,16 @@ def enter_frontdeskoffice(state):
             if item == ITEM_2:
                 if state["visited"][ROOM2] and state["frontdesk_reward_spawned"]:
                     if ITEM_2 in state["inventory"]:
-                        print(f"You already took the {ITEM_2}.")
+                        type_rich(f"You already took the {ITEM_2}.")
                     else:
-                        print(f"🔋 You take the {ITEM_2} and store it in your backpack.")
+                        type_rich(f"🔋 You take the {ITEM_2} and store it in your backpack.")
                         state["inventory"].append(ITEM_2)
                         # {ITEM_2} picked up; keep reward flag so no new {ITEM_2} spawns
                     _print_commands(state)
                 else:
-                    print(f"There is no {ITEM_2} available right now.")
+                    type_rich(f"There is no {ITEM_2} available right now.")
             else:
-                print(f"There is no '{item}' to take here.")
+                type_rich(f"There is no '{item}' to take here.")
             continue
 
         if command == "display status":
@@ -296,21 +309,21 @@ def enter_frontdeskoffice(state):
             continue
 
         if command == "pause":
-            print("⏸️ Game paused. Your progress has been saved.")
+            type_rich("⏸️ Game paused. Your progress has been saved.")
             try:
                 save_state(state)
             finally:
                 sys.exit()
 
         if command == "quit":
-            print("👋 You leave the front desk behind. Progress not saved.")
+            type_rich("👋 You leave the front desk behind. Progress not saved.")
             try:
                 clear_state()
                 reset_state(state)
             finally:
                 sys.exit()
 
-        print("❓ Unknown command. Type '?' to see available commands.")
+        type_rich("❓ Unknown command. Type '?' to see available commands.")
 
 
 # --- Helpers to render board and legend side by side ---

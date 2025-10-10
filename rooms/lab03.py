@@ -1,11 +1,13 @@
 import sys
 from dataclasses import dataclass, field
-from persistence import save_state, clear_state, reset_state
-from .constants import ITEM_6, ROOM5, ROOM6
-from .utils import display_status
+from persistence import get_default_state, save_state, clear_state, reset_state
+from rooms.constants import ITEM_6, ROOM5, ROOM6
+from rooms import texts
+from rooms.utils import display_status, handle_help_generic
+from rooms.texts import type_rich
 
 DESTINATION = ROOM5
-RESULT = "Caesar"
+RESULT = "qwerty123"
 
 
 @dataclass
@@ -70,11 +72,22 @@ class Terminal:
         except FileNotFoundError as e:
             return str(e)
 
-    def cat(self, filename: str):
-        if filename in self.user.pwd.files:
-            return self.user.pwd.files[filename].content
-        else:
-            return f"No such file: {filename}"
+    def cat(self, path: str):
+        try:
+            if "/" in path:
+                dir_path, filename = path.rsplit("/", 1)
+                directory = self.fs.resolve_path(self.user.pwd, dir_path)
+            else:
+                filename = path
+                directory = self.user.pwd
+
+            # Читаем файл
+            if filename in directory.files:
+                return directory.files[filename].content
+            else:
+                return f"No such file: {path}"
+        except FileNotFoundError:
+            return f"No such file or directory: {path}"
 
     def ls(self, path: str = ".") -> str:
         """Later should handle at least -l and -a"""
@@ -98,8 +111,20 @@ def start_game() -> Terminal:
     user_dir = Directory("student1730", home)
     home.subdirs["student1730"] = user_dir
 
-    secret = File(name="file.txt", owner="student1730", group="sudoers", content=RESULT)
+    secret = File(
+        name="secret.txt",
+        owner="student1730",
+        group="sudoers",
+        content="The secret key is: " + RESULT,
+    )
+    log = File(
+        name=".file.log",
+        owner="student1730",
+        group="sudoers",
+        content=texts.LOG_FILE_CONTENT,
+    )
     user_dir.files[secret.name] = secret
+    user_dir.files[log.name] = log
     player = User(
         name="student1730", host="school_pc24", access_level=999, sudo_pass="passwd"
     )
@@ -108,53 +133,60 @@ def start_game() -> Terminal:
 
 
 def enter_lab03(state: dict):
-    print(f"\n🏗️ You enter {ROOM6}.")
-    print(
-        "Several tables are pushed together, covered in papers, laptops, and half-eaten snacks."
+    type_rich(f"🏗️ You enter {ROOM6}.")
+    type_rich(
+        "Several workbenches are cluttered with open laptops, cables, energy drink cans, and forgotten access cards."
     )
-    print("A group of students is finishing a project while chatting and laughing.")
+    type_rich(
+        "Chairs are still pulled out, as if the people here left in a hurry just minutes ago."
+    )
 
     # --- Command handlers ---
 
     def handle_look():
-        """Describe the room and give clues."""
-        print("\nYou scan the room.")
-        print(
-            "The walls are covered in sticky notes, whiteboards are full of pseudocode and diagrams."
+        type_rich("You scan the room.")
+
+        type_rich(
+            "Whiteboards are filled with half-erased diagrams, credentials scribbled in corners, "
+            "and notes about ‘Eden integration’ and ‘Mara’s override keys’."
         )
+
         if not state["visited"].get(ROOM6):
-            print("Near the snack table, one student holds up a fruit and says:")
-            print("'You know what they say... which fruit keeps the doctor away?'")
-            print(
-                "Another grins and says, 'Classic. We always bring them during hackathons.'"
+            type_rich(
+                "On one of the tables, a laptop is still unlocked. "
+                "A terminal window is open, and someone's session is logged in under user `student1730`."
             )
-            print("Seems like a riddle. Maybe it's part of the challenge?")
+            type_rich(
+                "There’s also a stack of printed memos with system timestamps dated today."
+            )
+            type_rich(
+                "A sticky note lies next to the keyboard: 'don’t forget to scrub logs before Mara scans the cluster'."
+            )
         else:
-            print(
-                "The students have left. Only empty wrappers and a few notebooks remain."
+            type_rich(
+                "Most devices have gone to sleep. Only a few monitors still glow faintly."
             )
-        print("- Possible exits: corridor")
-        print("- Your current inventory:", state["inventory"])
+            type_rich(
+                "The same unlocked laptop remains — the session hasn't timed out yet."
+            )
+
+        type_rich("- Possible exits: corridor")
+        type_rich(f"- Your current inventory: {state['inventory']}")
 
     def handle_help():
         """List available commands."""
-        print("\nAvailable commands:")
-        print("- look around         : Examine the room for clues.")
-        if not state["visited"][ROOM6]:
-            print("- enter the <pc>      : You may find something useful in it.")
-        print("- go corridor / back  : Leave the room and return to the corridor.")
-        print("- ?                   : Show this help message.")
-        print("- display status      : Show your inventory, location, and visited rooms.")
-        print("- pause               : Save and exit (pause the game).")
-        print("- quit                : Quit without saving.")
+        add = {}
+        if not state["visited"].get(ROOM6):
+            add = {"enter the <pc>": "You may find something useful in it."}
+        handle_help_generic(ROOM6, specifics=add)
 
     def handle_go(destination):
         """Handle movement out of the room."""
         if destination in [ROOM5, "back"]:
-            print("You step away from the lively room and return to the corridor.")
+            type_rich(f"You step away from the lively room and return to the {ROOM5}.")
             return ROOM5
         else:
-            print(f"❌ You can't go to '{destination}' from here.")
+            type_rich(f"❌ You can't go to '{destination}' from here.")
             return None
 
     def handle_result(state):
@@ -178,15 +210,20 @@ def enter_lab03(state: dict):
                 case "cd":
                     cd_result = game.cd(cmd[1])
                     if cd_result:
-                        print(cd_result)
+                        type_rich(cd_result)
                 case "cat":
-                    print(game.cat(cmd[1]))
+                    type_rich(game.cat(cmd[1]))
                 case "ls":
-                    print(game.ls())
-                case "quit":
+                    type_rich(game.ls())
+                case "exit":
                     break
+                case _:
+                    type_rich("Wrong input. Try one of:", dialog=True)
+                    type_rich("cd: change directory", dialog=True)
+                    type_rich("ls: list directory content", dialog=True)
+                    type_rich("cat: concatenate file content", dialog=True)
+                    type_rich("exit: exit shell", dialog=True)
 
-        handle_result(state)
         return DESTINATION
 
     # --- Main command loop ---
@@ -206,22 +243,20 @@ def enter_lab03(state: dict):
                 return result
 
         elif command.startswith("enter the "):
-            result: str | None = enter_the_pc(state=state)
-            if result:
-                return result
+            enter_the_pc(state=state)
 
         elif command == "display status":
             display_status(state)
 
         elif command == "pause":
-            print("⏸️ Game paused. Your progress has been saved.")
+            type_rich("⏸️ Game paused. Your progress has been saved.")
             try:
                 save_state(state)
             finally:
                 sys.exit()
 
         elif command == "quit":
-            print(
+            type_rich(
                 "👋 You close your notebook and leave the project behind. Progress not saved."
             )
             try:
@@ -231,4 +266,9 @@ def enter_lab03(state: dict):
                 sys.exit()
 
         else:
-            print("❓ Unknown command. Type '?' to see available commands.")
+            type_rich("❓ Unknown command. Type '?' to see available commands.")
+
+
+if __name__ == "__main__":
+    st = get_default_state()
+    enter_lab03(state=st)
