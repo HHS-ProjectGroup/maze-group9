@@ -3,7 +3,7 @@ from rich.console import Console
 import random
 import time
 
-from rooms.constants import ITEM_1
+from rooms.constants import ITEM_1, ROOM3, ROOM1
 
 # In the better world there would be an IO class
 # funcs
@@ -13,6 +13,7 @@ GLITCH_CHARS = list("!@#$%^&*()-_+=~?<>|\\/[]{}:;.,0123456789▒░█▓")
 STOP_CHARS = " .,!?"
 GLITCH_PROB_BASE = 0.04
 GLITCH_PROB_STOP = 0.15
+DEBUG_SPEED = True
 
 def _render_and_pad(text_obj: Text, prev_last_len: int) -> int:
     """
@@ -58,6 +59,8 @@ def type_rich(raw_text: str, delay: float = 0.035, dialog: bool = False):
       и временно скрываем курсор для более чистого эффекта.
     """
     parsed = Text.from_markup(raw_text)
+    if DEBUG_SPEED:
+        delay = 0
 
     if not dialog:
         try:
@@ -180,9 +183,81 @@ CORRIDOR_EMPTY = lambda: type_rich("Nothing had changed since you've been here. 
 
 # Front Desk
 
+FRNT_DSK_LOOK_AROUND = lambda: type_rich("""The office looks sterile, yet strangely personal.
+You see a few posters on the wall — “Quantum Science Week 2124”, “AGI Safety Seminar”.
+There’s a maintenance memo lying near the desk, its edges crumpled.
+A sticky note glows faintly under the screen:
+“Battery recharge — before noon meeting. Don’t forget, Voss.”
+On the terminal, a soft blue glow pulses over an unfinished email draft.
+A CAPTCHA prompt waits on the bottom of the screen, blocking access to the message.
+It looks simple enough — a short verification test to prove you’re “not a bot”.
+""")
+
+FRNT_DSK_SOLVED_CAPCHA = lambda: type_rich("""The CAPTCHA dissolves, replaced by a dull email window.
+Most of the text is corrupted — strings of broken characters, timestamps, and placeholders.
+The only readable fragment says:
+“...system lockdown initiated at 09:14... keys transferred to Mara... access revoked for general staff...”
+Beneath the desk, you notice a blinking battery cell, still plugged into a portable charger.
+It looks intact — you could take it.""")
+
+FRNT_DSK_FAILED_CAPCHA = lambda: type_rich("""The CAPTCHA refreshes with a sharp tone.
+The screen flickers, and the message window fades back to idle.
+You try again, but the terminal locks you out with a notice:
+“Access temporarily suspended — please verify again later.”
+The hum of the machine feels almost mocking in the silence.""")
+
 # Classroom 2015
 
+c2015_WELCOME_0 = lambda: type_rich(raw_text=f"You enter {ROOM3}. It look like an regular classroom. There are set of student desks, a big teacher table near the wall, a blackboard and a chalk box near it. The windows are closed and covered with some blackout material, although a few light rays still highlight the interior")
+
+c2015_LOOK_AROUND = lambda: type_rich("There are nothing unreggular in the room. Each desk has some kind of tablet, which seems to be used by the students. There are some matrices and descriptor of AGI on blackboard. Some additional components are also there, such as nlp and RAG. It's all stated under the 08.11.\nYou keep scanning room for something to use, and your sight catches something looking like a cleaning bot. It shows no signals of live or movement. ")
+
+def c2015_APPROACH(has_item: bool):
+    type_rich(raw_text="You approach the cleaner. It gives no reaction. You are trying to move it to wake it up, but nothing happens either. You notice a button, and you press it.")
+    if not has_item:
+        type_rich(raw_text="Hello! Please, plug.. m.e ..  ", dialog=True)  
+    else: 
+        type_rich(raw_text="Hello! Please, plug me. Thank you! I must have had some segfault in my mainframe. Let me dump core to check it out. By the way, who are you? I can't read your number", dialog=True)
+
+
 # Project Room 3
+
+def PRJ3_DESC_0():
+    type_rich("""You enter a project room that once buzzed with activity.
+Long tables are cluttered with laptops, tangled cables, tools, and abandoned prototypes.
+The smell of solder and stale coffee still lingers in the air.
+A low hum rolls through the ceiling — some system just noticed you.\n
+The console screen wakes up slowly, displaying a single line:""")
+    type_rich("""UNREGISTERED PRESENCE. INITIATING QUERY PROTOCOL.""", dialog=True)
+    type_rich("A masked word appears, underscore by underscore — like an old hangman prompt")
+
+PRJ3_WELCOME_SOLVED = lambda: type_rich("The room looks the same as the last time you've been here. The console in the center is calm. Status: UNLOCKED.")
+
+def PRJ3_LOOK_AROUND():
+    type_rich(f"""The room is still and observant.
+Rows of long worktables are scattered with microchips, tools, VR frames, and gutted devices.
+Hackathon posters hang crookedly on the walls — “Buildathon 2123”, “NeuraJam”, “Eden Dev Sprint”.
+A few screens glow in idle mode, cycling fragments of old logs.
+
+The central console watches you.
+On its display, a partially hidden word pulses softly.
+You can interact with it — the interface seems ready for a challenge.
+
+A dim slot sits beneath the screen, currently sealed.
+Whatever is inside will only unlock after the system is satisfied.
+
+Exits: the {ROOM1} behind you.
+Your inventory is displayed faintly on a side panel.""")
+
+def PRJ3_DIALOG_ON_LEAVE():
+    type_rich("""The console stops humming.
+The masked word vanishes and a soft confirmation tone plays.""")
+    type_rich("'ACCESS CONDITIONALLY GRANTED.'", dialog=True)
+    type_rich("""A compartment beneath the console slides open with a faint click.
+Inside rests a compact device — most likely useful elsewhere.
+
+A panel on the wall unlocks, revealing access deeper into the facility.
+The system logs your presence but still doesn’t know what to make of you.""")
 
 # Study Landscape
 
