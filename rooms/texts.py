@@ -2,6 +2,7 @@ from rich.text import Text
 from rich.console import Console
 import random
 import time
+import sys
 
 from rooms.constants import ITEM_1, ROOM3, ROOM1
 
@@ -119,6 +120,36 @@ def type_rich(raw_text: str, delay: float = 0.035, dialog: bool = False):
     finally:
         _show_cursor()
 
+def glitch_line(real_line, glitch_delay=0.04, reveal_delay=0.02):
+    """
+    Построчная "коррупция": пробелы остаются нетронутыми,
+    все остальные символы временно заменяются на шум, затем постепенно раскрываются.
+    """
+    glitch_chars = "!@#$%^&*()_+=-[]{};:',.<>?/\\|▒░█"
+    length = len(real_line)
+
+    # 1) создаём строку-шум, но пробелы не трогаем
+    noisy = "".join(
+        (random.choice(glitch_chars) if ch != " " else " ")
+        for ch in real_line
+    )
+
+    sys.stdout.write(noisy + "\r")
+    sys.stdout.flush()
+    time.sleep(glitch_delay)
+
+    # 2) постепенно раскрываем настоящие символы
+    revealed = list(noisy)
+    for i, ch in enumerate(real_line):
+        if ch != " ":
+            revealed[i] = ch
+            sys.stdout.write("".join(revealed) + "\r")
+            sys.stdout.flush()
+            time.sleep(reveal_delay)
+
+    # финальная строка
+    sys.stdout.write(real_line + "\n")
+    sys.stdout.flush()
 # Start of the game
 
 WELCOMING_TEXT_0 = lambda: type_rich(
@@ -261,6 +292,31 @@ The system logs your presence but still doesn’t know what to make of you.""")
 
 # Study Landscape
 
+def LOBBY_WELCOME():
+    type_rich("""You step into a wide study lobby. Soft chairs and low tables sit in clusters, 
+as if people left only moments ago. A coffee machine murmurs somewhere out of sight, 
+but no cups, no voices, no movement.
+
+At first, you think the room is empty.
+
+Then you notice her.
+
+A woman sits alone at one of the terminals, motionless, eyes fixed on a blank wall.
+She doesn't flinch, doesn't track you. It's like her awareness is elsewhere—paused,
+buffering, waiting for something you can't see.
+
+You take a few steps.
+
+Without turning her head, she stops staring at the wall and looks directly at you.
+The shift is too clean, too synchronized, as if the movement wasn't physical but triggered.
+Her expression is unreadable—neither curious nor alarmed. Just… evaluating.
+
+She stands and begins walking toward you with deliberate calm. No greeting, no hesitation.
+As she closes the distance, something in her face softens—not warmly, but strategically.
+Like she has already chosen how to handle you.
+
+She stops just close enough to make it clear: you're not alone in here.
+And whatever she’s about to say, it won’t be optional.""")
 # Lab03
 
 # Lab01
