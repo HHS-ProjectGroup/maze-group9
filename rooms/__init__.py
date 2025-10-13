@@ -1,17 +1,7 @@
-# -----------------------------------------------------------------------------
-# File: __init__.py
-# ACS School Project - Simple Maze Example
-# Organization: THUAS (The Hague University of Applied Sciences)
-# Location: Delft
-# Date: July 2025
-# -----------------------------------------------------------------------------
-
-# Without this file, Python won't recognize a directory as a package.
-# Runs first when this package is imported
-from .corridor import enterCorridor
-from .studylandscape import enterStudyLandscape
-from .classroom2015 import enterClassroom2015
-from .projectroom3 import enterProjectRoom3
-from .utils import chooseNextRoom
-from .corridorquiz import generate_quadratic_inequality
-from .mechanics import *
+from rooms.classroom2015 import enter_classroom2015
+from rooms.corridor import enter_corridor
+from rooms.frontdeskoffice import enter_frontdeskoffice
+from rooms.lab03 import enter_lab03
+from rooms.studylandscape import enter_studylandscape
+from rooms.projectroom3 import enter_projectroom3
+from rooms.lab01 import enter_lab01
