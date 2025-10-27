@@ -82,7 +82,7 @@ def enter_studylandscape(state):
         type_rich("G H I J K L", dialog=True)
         type_rich("M N O P Q R", dialog=True)
         type_rich("S T U V W X", dialog=True)
-        type_rich("Y Z", dialog=True)
+        type_rich("Y Z \n Shift is left 4", dialog=True)
 
         # encrypted word
         encrypted = ""
@@ -180,21 +180,41 @@ def enter_studylandscape(state):
                 )
         return ""
 
+    # --- Minimap ---
     def print_minimap(state):
-        state = {"current_room": "enterLab03"}  # this must be changed
-        current_room = state.get("current_room", "")
 
-        def mark(room_func):
-            return "*" if current_room == room_func else " "
+        current_room = state["current_room"].lower()
+
+        def mark(room_name):
+            return "*" if current_room == room_name.lower() else " "
 
         minimap = f"""
-       (7) Lab2001 {mark("enterClassroom2015")} ───(6) Lab203 {mark("enterLab01")} ───(5) Lobby {mark("enterLab03")}───(1) Corridor {mark("enterStudyLandscape")}───(2) Front Desk {mark("enterFrontDeskOffice")}
-                                                  │
-                                                  │
-                                                  │
-                                  ┌───────────────┴───────────────┐
-                                (3) Project Room 3 {mark("enterProjectRoom3")}        (4) Classroom 2015 {mark("enterHDDRoom")}
-           """.strip("\n")
+           ┌──────────────────────────────────────────────────────────────────┐
+           │                                                                  │
+           │  ┌──────────┐  ┌──────────┐   ┌──────────┐  ┌──────────────────┐ │
+           │  │  Lab01   │  │   Lab03  │   │   Lobby  │  │     Corridor     │ │
+           │  │  ({mark("lab01")}7)  ├──┼──────────┤  │  ({mark("studylandscape")}5)           ({mark("corridor")}1) 
+           │  └────┬─────┘  └──────────┘   └──────────┘  └──────────────────┘ │
+           │       │                   │              │          │            │
+           │       │                   │              │          │            │
+           │       │                   │              │          │            │
+           │       │                   │              │          │            │
+           │       │                   │              │          │            │
+           │       │                   │              │          │            │
+           │       │                   │       ┌──────────┐  ┌──────────┐     │
+           │       │                   │       │ FrontDesk│  │  Classroom│    │
+           │       │                   │       │  Office  │  │  ({mark("classroom2015")}3)    
+           │       │                   │       │  ({mark("frontdeskoffice")}2)├
+           │       │                   │       └────┬─────┘  └──────────┘     │
+           │       │                   │            │                         │
+           │       │                   │       ┌────┴─────┐                   │
+           │       │                   │       │  HDDRoom │                   │
+           │       │                   │       │  ({mark("hddroom")}4)        │
+           │       │                   │       └──────────┘                   │
+           └──────────────────────────────────────────────────────────────────┘
+
+           """
+        print(minimap.strip("\n"))
 
         for line in minimap.split("\n"):
             glitch_line(real_line=line, glitch_delay=0.05, reveal_delay=0.01)
