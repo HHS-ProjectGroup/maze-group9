@@ -14,6 +14,9 @@ from rooms.texts import FRNT_DSK_FAILED_CAPCHA, FRNT_DSK_LOOK_AROUND, FRNT_DSK_S
 from .constants import ITEM_2, ROOM2
 from .utils import display_status, handle_help_generic
 
+# Holds the current puzzle hint text to print under the usage line
+_CURRENT_MOVE_HINT = None
+
 
 def _ensure_front_desk_state(state):
     # Initialize persistent state for this room
@@ -52,13 +55,14 @@ def _puzzle_pool():
         {
             "id": "p1",
             "title": "Checkmate in 1",
-            # White to move: Rook from A1 to A8 delivers mate. Black king has no escape (e7 is blocked).
             "solution": {"color": "white", "piece": "rook", "from": "A1", "to": "A8"},
             "explanation": "Back-rank mate: the rook on A8 checks along the 8th rank; the king cannot escape because e7 is blocked by its own pawn and there are no interpositions.",
             "pieces": {
                 # Black
                 "E8": "♚",
                 "E7": "♟",
+                "D7": "♟",   # Added
+                "F7": "♟",   # Added
                 # White
                 "A1": "♖",
                 "H1": "♔",
@@ -67,13 +71,13 @@ def _puzzle_pool():
         {
             "id": "p2",
             "title": "Checkmate in 1",
-            # White to move: Queen from G2 to G8 mates (same back-rank idea; e7 blocked).
             "solution": {"color": "white", "piece": "queen", "from": "G2", "to": "G8"},
             "explanation": "The queen ascends to G8 and mates along the back rank; the e7 pawn prevents the king from escaping to e7.",
             "pieces": {
                 # Black
                 "E8": "♚",
                 "E7": "♟",
+                "D7": "♝",   # Added
                 # White
                 "G2": "♕",
                 "H1": "♔",
@@ -82,13 +86,14 @@ def _puzzle_pool():
         {
             "id": "p3",
             "title": "Checkmate in 1",
-            # White to move: Rook from H1 to H8 mates (back-rank mate with e7 blocked).
             "solution": {"color": "white", "piece": "rook", "from": "H1", "to": "H8"},
             "explanation": "Rook to H8 delivers back-rank mate; the king cannot run to e7 and there are no blocking moves.",
             "pieces": {
                 # Black
                 "E8": "♚",
                 "E7": "♟",
+                "D7": "♜",   # Added
+                "F7": "♟",   # Added
                 # White
                 "H1": "♖",
                 "A1": "♔",
@@ -98,15 +103,13 @@ def _puzzle_pool():
 
 
 def _legend():
-    print("\nPiece Legend:")
-    print("♔ = White King      ♚ = Black King")
-    print("♕ = White Queen     ♛ = Black Queen")
-    print("♖ = White Rook      ♜ = Black Rook")
-    print("♗ = White Bishop    ♝ = Black Bishop")
-    print("♘ = White Knight    ♞ = Black Knight")
-    print("♙ = White Pawn      ♟ = Black Pawn")
-    print(".  = Empty square")
+    # Print the same neat legend used on the right side of the board
+    for line in _legend_lines():
+        print(line)
     print("\nType your move like: answer White rook A1 to A7")
+    # Contextual hint for the current challenge (printed under the usage line)
+    if _CURRENT_MOVE_HINT:
+        print(_CURRENT_MOVE_HINT)
 
 
 def _print_room_header(state):
@@ -129,16 +132,27 @@ def _look_around():
     FRNT_DSK_LOOK_AROUND()
 
 def _pick_new_puzzle(state):
+    global _CURRENT_MOVE_HINT
     pool = _puzzle_pool()
     last_id = state.get("frontdesk_last_puzzle_id")
     candidates = [p for p in pool if p.get("id") != last_id] if (last_id and len(pool) > 1) else pool
     chosen = random.choice(candidates)
     state["frontdesk_puzzle"] = chosen
     state["frontdesk_last_puzzle_id"] = chosen.get("id")
+    # Set contextual hint under the usage line based on the chosen puzzle
+    pid = chosen.get("id")
+    if pid == "p1":
+        _CURRENT_MOVE_HINT = "Hint: Move White Rook on A1"
+    elif pid == "p2":
+        _CURRENT_MOVE_HINT = "Hint: Move White Queen on G2"
+    elif pid == "p3":
+        _CURRENT_MOVE_HINT = "Hint: Move White Rook on H1"
+    else:
+        _CURRENT_MOVE_HINT = None
 
 
 def _render_chessboard(pieces: dict):
-    # Render a chessboard using ASCII exactly like the requested style.
+    # Render a chessboard using ASCII with Unicode chess symbols.
     files_lower = ["a", "b", "c", "d", "e", "f", "g", "h"]
     ranks = ["8", "7", "6", "5", "4", "3", "2", "1"]
     header = "    " + "   ".join(files_lower)
@@ -149,9 +163,7 @@ def _render_chessboard(pieces: dict):
         cells = []
         for f in files_lower:
             key = f.upper() + r
-            symbol = pieces.get(key, " ")
-            if not symbol:
-                symbol = " "
+            symbol = pieces.get(key, " ") or " "
             cells.append(symbol)
         print(f"{r} | " + " | ".join(cells) + f" | {r}")
         print(separator)
@@ -176,6 +188,8 @@ def _show_puzzle(state):
 def _print_commands(state):
     if not state["visited"][ROOM2]:
         print("\nType your move like: answer White rook A1 to A7")
+        if _CURRENT_MOVE_HINT:
+            print(_CURRENT_MOVE_HINT)
     print("\nAvailable commands:")
     entries = []
     if not state["visited"][ROOM2]:
@@ -183,7 +197,7 @@ def _print_commands(state):
     if state["visited"][ROOM2] and state["frontdesk_reward_spawned"] and ITEM_2 not in state["inventory"]:
         entries.append((f"- take {ITEM_2}", f": Pick up the {ITEM_2} reward."))
     entries.extend([
-        ("- leave", ": Exit to the corridor."),
+        ("- go back", ": Exit to the corridor."),
         ("- ?", ": Show this help message."),
         ("- look around", ": Reprint description and your options."),
         ("- display status", ": Show your inventory, location, and visited rooms."),
@@ -332,30 +346,92 @@ def _build_board_lines(pieces: dict):
     files_lower = ["a", "b", "c", "d", "e", "f", "g", "h"]
     ranks = ["8", "7", "6", "5", "4", "3", "2", "1"]
     header = "    " + "   ".join(files_lower)
-    separator = "  +---+---+---+---+---+---+---+---+"
+    separator = "  +" + "---+" * 8
     lines = [header, separator]
+
     for r in ranks:
-        cells = []
+        row = []
         for f in files_lower:
             key = f.upper() + r
             symbol = pieces.get(key, " ") or " "
-            cells.append(symbol)
-        lines.append(f"{r} | " + " | ".join(cells) + f" | {r}")
+            # Center each piece or space within 3-character cell
+            cell = f" {symbol} "
+            row.append(cell)
+        lines.append(f"{r} |" + "|".join(row) + f"| {r}")
         lines.append(separator)
     lines.append(header)
     return lines
 
 
 def _legend_lines():
+    """Build a neat, boxed legend to be shown on the right of the board.
+    Two aligned columns: White pieces | Black pieces.
+    """
+    title = "Piece Legend"
+
+    left_title = "White pieces"
+    right_title = "Black pieces"
+
+    left_items = [
+        ("King", "♔"),
+        ("Queen", "♕"),
+        ("Rook", "♖"),
+        ("Bishop", "♗"),
+        ("Knight", "♘"),
+        ("Pawn", "♙"),
+    ]
+    right_items = [
+        ("King", "♚"),
+        ("Queen", "♛"),
+        ("Rook", "♜"),
+        ("Bishop", "♝"),
+        ("Knight", "♞"),
+        ("Pawn", "♟"),
+    ]
+
+    left_lines = [f"{name}: {sym}" for name, sym in left_items]
+    right_lines = [f"{name}: {sym}" for name, sym in right_items]
+
+    left_width = max(len(left_title), max((len(s) for s in left_lines), default=0))
+    right_width = max(len(right_title), max((len(s) for s in right_lines), default=0))
+    gap = "   "  # spacing between columns
+
+    total_inner = left_width + len(gap) + right_width
+
+    top = "+" + "-" * (total_inner + 2) + "+"
+    title_line = "| " + title.center(total_inner) + " |"
+    header_line = (
+        "| "
+        + left_title.ljust(left_width)
+        + gap
+        + right_title.ljust(right_width)
+        + " |"
+    )
+    sep_line = "| " + ("-" * left_width) + gap + ("-" * right_width) + " |"
+
+    # Compose rows
+    row_count = max(len(left_lines), len(right_lines))
+    rows = []
+    for i in range(row_count):
+        left = left_lines[i] if i < len(left_lines) else ""
+        right = right_lines[i] if i < len(right_lines) else ""
+        rows.append(
+            "| " + left.ljust(left_width) + gap + right.ljust(right_width) + " |"
+        )
+
+    footnote_text = "(Empty squares are shown as blank)"
+    foot_line = "| " + footnote_text.ljust(total_inner) + " |"
+    bottom = "+" + "-" * (total_inner + 2) + "+"
+
     return [
-        "Piece Legend:",
-        "♔ = White King      ♚ = Black King",
-        "♕ = White Queen     ♛ = Black Queen",
-        "♖ = White Rook      ♜ = Black Rook",
-        "♗ = White Bishop    ♝ = Black Bishop",
-        "♘ = White Knight    ♞ = Black Knight",
-        "♙ = White Pawn      ♟ = Black Pawn",
-        "   = Empty square",
+        top,
+        title_line,
+        header_line,
+        sep_line,
+        *rows,
+        sep_line,
+        foot_line,
+        bottom,
         "",
     ]
 
@@ -363,12 +439,11 @@ def _legend_lines():
 def _print_board_with_legend(pieces: dict):
     board_lines = _build_board_lines(pieces)
     legend_lines = _legend_lines()
-    left_width = max((len(s) for s in board_lines), default=0)
+    left_width = max(len(line) for line in board_lines)
     gap = "   "
-    total = max(len(board_lines), len(legend_lines))
-    for i in range(total):
-        left = board_lines[i] if i < len(board_lines) else "".ljust(left_width)
-        if len(left) < left_width:
-            left = left + (" " * (left_width - len(left)))
+    total_lines = max(len(board_lines), len(legend_lines))
+
+    for i in range(total_lines):
+        left = board_lines[i] if i < len(board_lines) else " " * left_width
         right = legend_lines[i] if i < len(legend_lines) else ""
-        print(left + gap + right)
+        print(left.ljust(left_width) + gap + right)
