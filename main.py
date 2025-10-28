@@ -7,11 +7,11 @@ from rooms import (
     enter_lab01,
     enter_projectroom3,
     enter_studylandscape,
-    constants
 )
 from rooms.constants import ROOM1, ROOM2, ROOM3, ROOM4, ROOM5, ROOM6, ROOM7
 from persistence import load_state, get_default_state, save_state
 from leaderboard import print_leaderboard, append_result, GameTimer
+from rooms import texts
 
 state = get_default_state()
 def _get_player_name() -> str:
@@ -34,24 +34,9 @@ def _get_player_name() -> str:
 
 
 def main(state):
-    print(
-        "****************************************************************************"
-    )
-    print(
-        "*                      Welcome to the School Maze!                         *"
-    )
-    print(
-        "*        Your goal is to explore all important rooms in the school.        *"
-    )
-    print(
-        "*    You may need to solve challenges to collect items and unlock rooms.   *"
-    )
-    print(
-        "*               Once you've visited all rooms, you win!                    *"
-    )
-    print(
-        "****************************************************************************"
-    )
+    texts.WELCOMING_TEXT_0()
+    texts.WELCOMING_TEXT_1()
+    texts.CORRIDOR_TEXT_UNVISITED_0()
 
     while True:
         current = state["current_room"]

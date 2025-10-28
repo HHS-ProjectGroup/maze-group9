@@ -8,18 +8,30 @@
 
 import sys
 from persistence import save_state, clear_state, reset_state
+from rooms import constants
+from rooms.texts import LOBBY_WELCOME, type_rich, glitch_line
+# Bianca's room item. It is needed in order to get the access to the StudyLandscape
+REWARD_ITEM = constants.ITEM_4
 from .constants import ITEM_4,ITEM_5
-from .utils import display_status
+from .utils import display_status, handle_help_generic
 #Bianca's room item. It is needed in order to get the access to the StudyLandscape
 REWARD_ITEM = ITEM_4
 
-#the list of all the rooms
-rooms = ["Classroom2015", "Corridor", "FrontDeskOffice", "Lab03", "Lab01", "ProjectRoom3", "StudyLandscape"]
+# the list of all the rooms
+rooms = [
+    constants.ROOM1,
+    constants.ROOM2,
+    constants.ROOM3,
+    constants.ROOM4,
+    constants.ROOM5,
+    constants.ROOM6,
+    constants.ROOM7,
+]
 
-#the list of room which are accessible from the StudyLandcapeRoom
-available_rooms = ["corridor", "lab01", "lab03"]
+# the list of room which are accessible from the StudyLandcapeRoom
+available_rooms = [constants.ROOM1, constants.ROOM6, constants.ROOM7]
 
-#did you approach a computer
+# did you approach a computer
 approach_computer = False
 
 # Decrypted word + encryption shift (CEASER encryption)
@@ -27,127 +39,149 @@ word = "cardboard"
 shift = 4
 
 approach_destinations = {
-    "lab03": "You approach the massive door. The label says 'LAB2003'. Something important must be inside.",
-    "lab01": "You see an old but still working computer. Maybe there’s something useful on it.",
-    "corridor": "On the table lies a project sample. It looks like an unfinished coursework.",
-    "computer": "This is another sample, but with a nice cover page.",
-    "aid_kits": "There’s a first aid kit in the corner. You never know when it might come in handy."
+    "lab03": "You approach the massive door. The label says 'LAB2003'. As you remember from your study, this is a place with the lab desk and server racks.",
+    "lab01": "It is a smaller lab. You see a bunch of PCs scattered along the walls. Noone's inside too though.",
+    "corridor": "There is nothing new there, except that the oil staines are cleaned. Who could have done it?",
+    "computer": "You see an decrypting window opened there. Probably it has something to do with EDEN's or School's firewall",
+    "aid_kits": "There’s a first aid kit in the corner. You never know when it might come in handy.",
 }
 
-#the enter scrpit
+
+# the enter scrpit
 def enter_studylandscape(state):
-
-    print("\n🛋️ You step into the study landscape.")
-    print("Soft chairs and tables to work and chat with fellow students and a quiet hum of a coffee machine.")
-    print("It feels like a place to work but also to pause and catch your breath.")
-
+    LOBBY_WELCOME()
     if REWARD_ITEM in state["inventory"]:
-        print(f"{ITEM_4} is in your inventory")
-        state["current_room"] = "StudyLandscape"
+        type_rich(f"{constants.ITEM_4} is in your inventory")
+        state["current_room"] = constants.ROOM5
     else:
-        print("Access denied")
+        type_rich("Access denied")
 
     # --- Command handlers ---
-#story-telling script
+
+    # story-telling script
     def handle_look():
         """Describe the lobby and show exits."""
-        print("\nYou take a slow look around.")
-        print("There are a few posters on the wall about upcoming student events.")
-        print("A group of students is sitting in the corner gazing at a laptop.")
-        print("- Possible exit: corridor")
-        print("- Your current inventory:", state["inventory"])
-        print("You notice several things you could approach:", ", ".join(approach_destinations.keys()))
+        type_rich("\nYou take a slow look around.")
+        type_rich(
+            "Soft chairs and worktables fill the open space. Most monitors are in sleep mode."
+        )
+        type_rich(
+            "Glass walls reflect faint emergency lighting. The coffee machine hums, but no one is using it."
+        )
+        type_rich("- Possible exit: corridor")
+        type_rich(f"- Your current inventory: {state['inventory']}")
+        type_rich(
+            "You notice things you could approach: "
+            + ", ".join(approach_destinations.keys())
+        )
 
     # Decryption challenge. Ceaser encryption
     def decrypt(text, shift):
-        #alphabet
-        print("A B C D E F\nG H I J K L\nM N O P Q R\nS T U V W X\nY Z")
+        # alphabet
+        type_rich("A B C D E F", dialog=True)
+        type_rich("G H I J K L", dialog=True)
+        type_rich("M N O P Q R", dialog=True)
+        type_rich("S T U V W X", dialog=True)
+        type_rich("Y Z", dialog=True)
 
-        #encrypted word
+        # encrypted word
         encrypted = ""
 
         for char in text:
             if char.isalpha():
                 if char.islower():
-                    encrypted += chr((ord(char) - ord('a') + shift) % 26 + ord('a'))
+                    encrypted += chr((ord(char) - ord("a") + shift) % 26 + ord("a"))
                 else:
-                    encrypted += chr((ord(char) - ord('A') + shift) % 26 + ord('A'))
+                    encrypted += chr((ord(char) - ord("A") + shift) % 26 + ord("A"))
             else:
                 encrypted += char
-        print(f'\n" Encrypted word is {encrypted}')
+        type_rich(f'" Encrypted word is {encrypted}', dialog=True)
 
         guess = input("Your guess: ").strip().lower()
         if guess == word:
-            print("Congratulations! You got it!")
+            type_rich("Congratulations! You got it!", dialog=True)
         else:
-            print("wrong")
+            type_rich("wrong", dialog=True)
 
-            #User gave wrong answer. Does he want to give a new one?
+            # User gave wrong answer. Does he want to give a new one?
             def wanna_decrypt_choice():
-                wanna_try = input('Do you want to take one more guess? "yes" or "no": ').strip().lower()
+                wanna_try = (
+                    input('Do you want to take one more guess? "yes" or "no": ')
+                    .strip()
+                    .lower()
+                )
                 if wanna_try == "yes":
                     decrypt(text, shift)
                 elif wanna_try == "no":
-                    print("computer is shut down")
+                    type_rich("computer is shut down", dialog=True)
                 else:
-                    print("write yes or no")
+                    type_rich("write yes or no", dialog=True)
                     wanna_decrypt_choice()
 
             wanna_decrypt_choice()
 
-            #Approach script, story telling + functionality
+    # Approach script, story telling + functionality
     def handle_approach(target):
         """Handle approaching objects/areas."""
         key = target.lower()
         if key in approach_destinations:
-            print(f"\n👉 {approach_destinations[key]}")
+            type_rich(f"👉 {approach_destinations[key]}")
             if key == "computer":
                 global approach_computer
                 approach_computer = True
 
-                #Does our player even wants to start decrypting?
+                # Does our player even wants to start decrypting?
                 def wanna_play_decrypt_choice():
-                    wanna_play_decrypt = input('You are approaching the computer. Type "decrypt" to try, otherwise "no": ').strip().lower()
+                    type_rich(
+                        'You are approaching the computer. Type "decrypt" to try, otherwise "no": ',
+                        dialog=True,
+                    )
+                    wanna_play_decrypt = input().strip().lower()
                     if wanna_play_decrypt == "decrypt" and approach_computer:
                         decrypt(word, shift)
                     elif wanna_play_decrypt == "no":
-                        print("computer is shut down")
+                        type_rich("computer is shut down")
                     else:
-                        print("write decrypt or no")
+                        type_rich("write decrypt or no")
                         wanna_play_decrypt_choice()
 
                 wanna_play_decrypt_choice()
         else:
-            print(f"You can't approach '{target}'. Try: {', '.join(approach_destinations.keys())}")
+            type_rich(
+                f"You can't approach '{target}'. Try: {', '.join(approach_destinations.keys())}"
+            )
 
-            #The list with all the commands
+    # The list with all the commands
     def handle_help():
         """Show help message with available commands."""
-        print("\nAvailable commands:")
-        print("- look around         : See what’s in the lobby.")
-        print(f"- approach <thing>    : {approach_destinations} ")
-        print("- go corridor / back  : Return to the main corridor.")
-        print("- ?                   : Show this help message.")
-        print("- display status      : Show your inventory, location, and visited rooms.")
-        print("- pause               : Save and exit (pause the game).")
-        print("- quit                : Quit without saving.")
-        print(f"Current room is {state['current_room']}.")
+        handle_help_generic(
+            constants.ROOM5,
+            specifics={
+                "approach <thing>": f"{', '.join(approach_destinations.keys())}"
+            },
+        )
 
     # Go function, through this function user can go to the other room.
-    def handle_go(destination):
+    def handle_go(destination: str) -> str:
         """Handle movement to another room."""
-        if state["current_room"] == "StudyLandscape":
+        if state["current_room"] == constants.ROOM5:
             if destination in available_rooms:
-                print(f"You left StudyLandscape. You step into {destination}")
-                state["previous_room"] = "StudyLandscape"
+                type_rich(f"You left StudyLandscape. You step into {destination}")
+                state["previous_room"] = constants.ROOM5
                 state["current_room"] = destination
+                return destination
             elif destination in rooms and destination not in available_rooms:
-                print(f"You can't access {destination} from {state['current_room']}")
+                type_rich(
+                    f"You can't access {destination} from {state['current_room']}"
+                )
             else:
-                print('This command does not exist. Check "?" out to find appropriate commands.')
+                type_rich(
+                    'This command does not exist. Check "?" out to find appropriate commands.'
+                )
+        return ""
 
     def print_minimap(state):
-        state = {"current_room": "enterLab03"}
+        state = {"current_room": "enterLab03"}  # this must be changed
         current_room = state.get("current_room", "")
 
         def mark(room_func):
@@ -159,10 +193,11 @@ def enter_studylandscape(state):
                                                   │
                                                   │
                                   ┌───────────────┴───────────────┐
-                                (3) Room3 {mark("enterProjectRoom3")}        (4) HDD Room {mark("enterHDDRoom")}
+                                (3) Project Room 3 {mark("enterProjectRoom3")}        (4) Classroom 2015 {mark("enterHDDRoom")}
            """.strip("\n")
 
-        print(minimap)
+        for line in minimap.split("\n"):
+            glitch_line(real_line=line, glitch_delay=0.05, reveal_delay=0.01)
 
     # --- Main command loop ---
     while True:
@@ -190,14 +225,16 @@ def enter_studylandscape(state):
                 return result
 
         elif command == "pause":
-            print("⏸️ Game paused. Your progress has been saved.")
+            type_rich("⏸️ Game paused. Your progress has been saved.")
             try:
                 save_state(state)
             finally:
                 sys.exit()
 
         elif command == "quit":
-            print("👋 You sit back in the softest chair, close your eyes, and exit the adventure. Progress not saved.")
+            type_rich(
+                "👋 You sit back in the softest chair, close your eyes, and exit the adventure. Progress not saved."
+            )
             try:
                 clear_state()
                 reset_state(state)
@@ -205,22 +242,21 @@ def enter_studylandscape(state):
                 sys.exit()
 
         else:
-            print("❓ Unknown command. Type '?' to see available commands.")
+            type_rich("❓ Unknown command. Type '?' to see available commands.")
 
 
-''' Code for solo launch'''
+""" Code for solo launch"""
 if __name__ == "__main__":
     state = {
-        "current_room": "corridor",
-        "previous_room": "corridor",
+        "current_room": constants.ROOM1,
+        "previous_room": constants.ROOM1,
         "visited": {
-            "classroom2015": False,
-            "projectroom3": False,
-            "frontdeskoffice": False,
-            "corridor": [False, 3],  # the number of encounters left
+            constants.ROOM3: False,
+            constants.ROOM4: False,
+            constants.ROOM2: False,
+            constants.ROOM1: [False, 3],  # the number of encounters left
         },
-        "inventory": [f"{ITEM_4}"],
+        "inventory": [constants.ITEM_4],
         "health": 3,
     }
     enter_studylandscape(state)
-
