@@ -104,10 +104,10 @@ def _puzzle_pool():
 def _legend():
     # Print the same neat legend used on the right side of the board
     for line in _legend_lines():
-        print(line)
+        type_rich(line)
     # Contextual hint for the current challenge (printed under the usage line)
     if _CURRENT_MOVE_HINT:
-        print(_CURRENT_MOVE_HINT)
+        type_rich(_CURRENT_MOVE_HINT)
 
 
 def _print_room_header(state):
@@ -155,17 +155,17 @@ def _render_chessboard(pieces: dict):
     ranks = ["8", "7", "6", "5", "4", "3", "2", "1"]
     header = "    " + "   ".join(files_lower)
     separator = "  +---+---+---+---+---+---+---+---+"
-    print(header)
-    print(separator)
+    type_rich(header)
+    type_rich(separator)
     for r in ranks:
         cells = []
         for f in files_lower:
             key = f.upper() + r
             symbol = pieces.get(key, " ") or " "
             cells.append(symbol)
-        print(f"{r} | " + " | ".join(cells) + f" | {r}")
-        print(separator)
-    print(header)
+        type_rich(f"{r} | " + " | ".join(cells) + f" | {r}")
+        type_rich(separator)
+    type_rich(header)
 
 
 def _show_puzzle(state):
@@ -173,38 +173,33 @@ def _show_puzzle(state):
     if not p:
         _pick_new_puzzle(state)
         p = state["frontdesk_puzzle"]
-    print(f"\n{p['title']}: White to move and checkmate in 1")
+    type_rich(f"\n{p['title']}: White to move and checkmate in 1")
     pieces = p.get("pieces")
     if isinstance(pieces, dict):
         _print_board_with_legend(pieces)
     else:
         # Fallback to pre-rendered board string
-        print(p.get("board", ""))
+        type_rich(p.get("board", ""))
         _legend()
 
 
 def _print_commands(state):
+    # Keep the contextual usage line and dynamic hint on first visit
     if not state["visited"][ROOM2]:
-        print("\nType your move like: answer White queen to G8")
+        type_rich("\nType your move like: answer White queen to G8")
         if _CURRENT_MOVE_HINT:
-            print(_CURRENT_MOVE_HINT)
-    print("\nAvailable commands:")
-    entries = []
+            type_rich(_CURRENT_MOVE_HINT)
+
+    # Build room-specific commands and delegate printing to the generic helper
+    specifics: dict[str, str] = {}
+
     if not state["visited"][ROOM2]:
-        entries.append(("- answer <Color> <Piece> to <To>", ": e.g., Answer White queen to G8"))
+        specifics["answer <Color> <Piece> to <To>"] = "e.g., answer White queen to G8"
+
     if state["visited"][ROOM2] and state["frontdesk_reward_spawned"] and ITEM_2 not in state["inventory"]:
-        entries.append((f"- take {ITEM_2}", f": Pick up the {ITEM_2} reward."))
-    entries.extend([
-        ("- go back", ": Exit to the corridor."),
-        ("- ?", ": Show this help message."),
-        ("- look around", ": Reprint description and your options."),
-        ("- display status", ": Show your inventory, location, and visited rooms."),
-        ("- pause", ": Save and exit (pause the game)."),
-        ("- quit", ": Quit without saving."),
-    ])
-    left_width = max(len(left) for left, _ in entries) if entries else 0
-    for left, right in entries:
-        print(left.ljust(left_width) + "  " + right)
+        specifics[f"take {ITEM_2}"] = f"Pick up the {ITEM_2} reward."
+
+    handle_help_generic(ROOM2, specifics)
 
 
 def _parse_answer(text: str):
@@ -296,9 +291,9 @@ def enter_frontdeskoffice(state):
                 and (parsed["to"] == sol["to"])  # ensure same destination
             )
             if move_match or strict_match:
-                print("\n[Cyber Receptionist]: ‘Correct. Accept your reward…’")
-                print(f"The Cyber Receptionist places a {ITEM_2} on the desk in front of you.")
-                print(f"The {ITEM_2} hums softly with stored energy.")
+                type_rich("\n[Cyber Receptionist]: ‘Correct. Accept your reward…’")
+                type_rich(f"The Cyber Receptionist places a {ITEM_2} on the desk in front of you.")
+                type_rich(f"The {ITEM_2} hums softly with stored energy.")
                 # Spawn {ITEM_2} in the room (once)
                 state["frontdesk_reward_spawned"] = True
                 state["visited"][ROOM2] = True
@@ -306,8 +301,8 @@ def enter_frontdeskoffice(state):
             else:
                 FRNT_DSK_FAILED_CAPCHA()
                 state["frontdesk_question"] = None  # ensure a fresh random on next entry
-                print("\n[Cyber Receptionist]: ‘Incorrect. EJECTING…’")
-                print("You are flung out into the corridor!")
+                type_rich("\n[Cyber Receptionist]: ‘Incorrect. EJECTING…’")
+                type_rich("You are flung out into the corridor!")
                 state["frontdesk_puzzle"] = None  # ensure a fresh random on next entry
                 state["previous_room"] = ROOM2
                 return "corridor"
@@ -458,4 +453,4 @@ def _print_board_with_legend(pieces: dict):
     for i in range(total_lines):
         left = board_lines[i] if i < len(board_lines) else " " * left_width
         right = legend_lines[i] if i < len(legend_lines) else ""
-        print(left.ljust(left_width) + gap + right)
+        type_rich(left.ljust(left_width) + gap + right)
