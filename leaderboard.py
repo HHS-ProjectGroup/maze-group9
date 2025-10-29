@@ -56,9 +56,13 @@ def print_leaderboard(entries: List[Tuple[str, int, float]] | None = None) -> No
     if not entries:
         print("No results yet. Be the first to set a score!")
         return
-    print("#  Name                 Score   Time (s)")
+    print("#  Name                 Score   Time (mm:ss)")
     for i, (name, score, seconds) in enumerate(entries, start=1):
-        print(f"{i:>2}. {name[:18]:<18}  {score:>5}   {seconds:>7.2f}")
+        total = int(seconds if seconds is not None else 0)
+        mm = total // 60
+        ss = total % 60
+        mmss = f"{mm:02d}:{ss:02d}"
+        print(f"{i:>2}. {name[:18]:<18}  {score:>5}   {mmss:>9}")
 
 
 class GameTimer:

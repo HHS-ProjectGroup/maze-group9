@@ -118,7 +118,12 @@ if __name__ == "__main__":
         if beaten:
             name = _get_player_name()
             try:
-                score_val = int(state.get("score", 0)) if isinstance(state, dict) else 0
+                # Per-second proportional penalty: 100 points per minute, scaled by seconds
+                # Example: 2 minutes 30 seconds (150s) → penalty = floor(150 * 100 / 60) = 250
+                penalty = int(float(total_elapsed) * (100.0 / 60.0))
+                score_val = max(0, 3000 - penalty)
+                if isinstance(state, dict):
+                    state["score"] = score_val
             except Exception:
                 score_val = 0
             append_result(name=name, score=score_val, seconds=float(total_elapsed))

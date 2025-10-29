@@ -50,21 +50,21 @@ def _question_pool():
 
 def _puzzle_pool():
     # Three simple and logically valid "Checkmate in 1" puzzles.
-    # Answers use the format: answer White rook A1 to A7
+    # Answers use the format: answer White queen to G8 (from-square optional)
     return [
         {
             "id": "p1",
             "title": "Checkmate in 1",
-            "solution": {"color": "white", "piece": "rook", "from": "A1", "to": "A8"},
-            "explanation": "Back-rank mate: the rook on A8 checks along the 8th rank; the king cannot escape because e7 is blocked by its own pawn and there are no interpositions.",
+            "solution": {"color": "white", "piece": "queen", "from": "C1", "to": "C8"},
+            "explanation": "Back-rank mate: the white queen on C1 checks along the back rank; the king cannot escape because e7 is blocked by its own pawn and there are no interpositions.",
             "pieces": {
                 # Black
                 "E8": "♚",
                 "E7": "♟",
-                "D7": "♟",   # Added
-                "F7": "♟",   # Added
+                "D7": "",
+                "F7": "♟",
                 # White
-                "A1": "♖",
+                "C1": "♕",
                 "H1": "♔",
             },
         },
@@ -77,7 +77,7 @@ def _puzzle_pool():
                 # Black
                 "E8": "♚",
                 "E7": "♟",
-                "D7": "♝",   # Added
+                "D7": "♝",
                 # White
                 "G2": "♕",
                 "H1": "♔",
@@ -86,17 +86,16 @@ def _puzzle_pool():
         {
             "id": "p3",
             "title": "Checkmate in 1",
-            "solution": {"color": "white", "piece": "rook", "from": "H1", "to": "H8"},
-            "explanation": "Rook to H8 delivers back-rank mate; the king cannot run to e7 and there are no blocking moves.",
+            "solution": {"color": "white", "piece": "rook", "from": "H2", "to": "H8"},
+            "explanation": "Rook to H8 delivers back-rank mate; the king cannot run to f7 or d7 because of White knight on E5 and there are no blocking moves.",
             "pieces": {
                 # Black
                 "E8": "♚",
                 "E7": "♟",
-                "D7": "♜",   # Added
-                "F7": "♟",   # Added
                 # White
-                "H1": "♖",
-                "A1": "♔",
+                "E5": "♘",
+                "H2": "♖",
+                "E1": "♔",
             },
         },
     ]
@@ -106,7 +105,6 @@ def _legend():
     # Print the same neat legend used on the right side of the board
     for line in _legend_lines():
         print(line)
-    print("\nType your move like: answer White rook A1 to A7")
     # Contextual hint for the current challenge (printed under the usage line)
     if _CURRENT_MOVE_HINT:
         print(_CURRENT_MOVE_HINT)
@@ -142,11 +140,11 @@ def _pick_new_puzzle(state):
     # Set contextual hint under the usage line based on the chosen puzzle
     pid = chosen.get("id")
     if pid == "p1":
-        _CURRENT_MOVE_HINT = "Hint: Move White Rook on A1"
+        _CURRENT_MOVE_HINT = "Hint: Move White Queen on C1"
     elif pid == "p2":
         _CURRENT_MOVE_HINT = "Hint: Move White Queen on G2"
     elif pid == "p3":
-        _CURRENT_MOVE_HINT = "Hint: Move White Rook on H1"
+        _CURRENT_MOVE_HINT = "Hint: Move White Rook on H2"
     else:
         _CURRENT_MOVE_HINT = None
 
@@ -187,13 +185,13 @@ def _show_puzzle(state):
 
 def _print_commands(state):
     if not state["visited"][ROOM2]:
-        print("\nType your move like: answer White rook A1 to A7")
+        print("\nType your move like: answer White queen to G8")
         if _CURRENT_MOVE_HINT:
             print(_CURRENT_MOVE_HINT)
     print("\nAvailable commands:")
     entries = []
     if not state["visited"][ROOM2]:
-        entries.append(("- answer <Color> <Piece> <From> to <To>", ": Answer White rook A1 to A7"))
+        entries.append(("- answer <Color> <Piece> to <To>", ": e.g., Answer White queen to G8"))
     if state["visited"][ROOM2] and state["frontdesk_reward_spawned"] and ITEM_2 not in state["inventory"]:
         entries.append((f"- take {ITEM_2}", f": Pick up the {ITEM_2} reward."))
     entries.extend([
@@ -210,18 +208,32 @@ def _print_commands(state):
 
 
 def _parse_answer(text: str):
-    # Accept variants like: "answer White rook A1 to A7" or arrows
-    # Normalize spacing and separators
-    m = re.match(r"^answer\s+([a-zA-Z]+)\s+([a-zA-Z]+)\s+([a-hA-H][1-8])\s*(?:to|->|\-)\s*([a-hA-H][1-8])$", text.strip())
-    if not m:
-        return None
-    color, piece, sq_from, sq_to = m.groups()
-    return {
-        "color": color.lower(),
-        "piece": piece.lower(),
-        "from": sq_from.upper(),
-        "to": sq_to.upper(),
-    }
+    # Accept variants like the NEW preferred format:
+    #   "answer White queen to G8"
+    # and legacy variants:
+    #   "answer White queen G2 to G8" or "answer White queen on G2 to G8"
+    t = text.strip()
+    # First try: with an explicit from-square (supports optional 'on' and arrow separators)
+    m_full = re.match(r"^answer\s+([a-zA-Z]+)\s+([a-zA-Z]+)\s+(?:on\s+)?([a-hA-H][1-8])\s*(?:to|->|\-)\s*([a-hA-H][1-8])$", t)
+    if m_full:
+        color, piece, sq_from, sq_to = m_full.groups()
+        return {
+            "color": color.lower(),
+            "piece": piece.lower(),
+            "from": sq_from.upper(),
+            "to": sq_to.upper(),
+        }
+    # Second try: short form without from-square
+    m_short = re.match(r"^answer\s+([a-zA-Z]+)\s+([a-zA-Z]+)\s*(?:to|->|\-)\s*([a-hA-H][1-8])$", t)
+    if m_short:
+        color, piece, sq_to = m_short.groups()
+        return {
+            "color": color.lower(),
+            "piece": piece.lower(),
+            "from": None,
+            "to": sq_to.upper(),
+        }
+    return None
 
 
 def enter_frontdeskoffice(state):
@@ -230,22 +242,21 @@ def enter_frontdeskoffice(state):
     # Always show header on entering
     _print_room_header(state)
 
-    # If solved previously, show post-completion greeting and commands, no puzzles
+    # If solved previously, show post-completion greeting; do not auto-print commands
     if state["visited"][ROOM2]:
-        _print_commands(state)
+        pass
     else:
         # First-time entry: select or show a puzzle
         # Always pick a fresh random puzzle whenever the player enters this room (until solved)
         _pick_new_puzzle(state)
         _show_puzzle(state)
-        _print_commands(state)
 
     # Main command loop for the room
     while True:
         raw = input("\n> ").strip()
         command = raw.lower()
 
-        if command in ("?", "help"):
+        if command == "?":
             _print_commands(state)
             continue
 
@@ -253,10 +264,9 @@ def enter_frontdeskoffice(state):
             _look_around()
             if not state["visited"][ROOM2]:
                 _show_puzzle(state)
-            _print_commands(state)
             continue
 
-        if command == "leave" or command == "go corridor" or command == "back":
+        if command == "go back" or command == "go corridor" or command == "back":
             type_rich("You step away from the holographic desk and return to the corridor.")
             state["previous_room"] = ROOM2
             return "corridor"
@@ -267,7 +277,7 @@ def enter_frontdeskoffice(state):
                 continue
             parsed = _parse_answer(raw)
             if not parsed:
-                type_rich("Please answer like: answer White rook A1 to A7")
+                type_rich("example answer: answer White queen to B8")
                 _legend()
                 continue
             p = state["frontdesk_puzzle"]
@@ -275,22 +285,24 @@ def enter_frontdeskoffice(state):
                 _pick_new_puzzle(state)
                 p = state["frontdesk_puzzle"]
             sol = p["solution"]
-            # Accept correct move even if the player mistypes color/piece words.
-            same_move = (parsed["from"] == sol["from"]) and (parsed["to"] == sol["to"])
+            # Accept correct move by destination only when from-square is omitted; remain strict if provided.
+            if parsed["from"] is None:
+                move_match = (parsed["to"] == sol["to"])  # short form
+            else:
+                move_match = (parsed["from"] == sol["from"]) and (parsed["to"] == sol["to"])  # legacy form
             strict_match = (
                 parsed["color"] == sol["color"]
                 and parsed["piece"] == sol["piece"]
-                and same_move
+                and (parsed["to"] == sol["to"])  # ensure same destination
             )
-            if same_move or strict_match:
+            if move_match or strict_match:
                 print("\n[Cyber Receptionist]: ‘Correct. Accept your reward…’")
                 print(f"The Cyber Receptionist places a {ITEM_2} on the desk in front of you.")
                 print(f"The {ITEM_2} hums softly with stored energy.")
                 # Spawn {ITEM_2} in the room (once)
                 state["frontdesk_reward_spawned"] = True
                 state["visited"][ROOM2] = True
-                # After success, no new questions; show that {ITEM_2} can be taken
-                _print_commands(state)
+                # After success, no new questions; player can type '?' to see available commands
             else:
                 FRNT_DSK_FAILED_CAPCHA()
                 state["frontdesk_question"] = None  # ensure a fresh random on next entry
@@ -311,7 +323,7 @@ def enter_frontdeskoffice(state):
                         type_rich(f"🔋 You take the {ITEM_2} and store it in your backpack.")
                         state["inventory"].append(ITEM_2)
                         # {ITEM_2} picked up; keep reward flag so no new {ITEM_2} spawns
-                    _print_commands(state)
+                    # Type '?' to see available commands
                 else:
                     type_rich(f"There is no {ITEM_2} available right now.")
             else:
