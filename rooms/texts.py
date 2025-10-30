@@ -14,8 +14,8 @@ GLITCH_CHARS = list("!@#$%^&*()-_+=~?<>|\\/[]{}:;.,0123456789▒░█▓")
 STOP_CHARS = " .,!?"
 GLITCH_PROB_BASE = 0.04
 GLITCH_PROB_STOP = 0.15
-DEBUG_SPEED = False  # This flag makes text render fast
-# DEBUG_SPEED = True  # This flag makes text render fast
+# DEBUG_SPEED = False  # This flag makes text render fast
+DEBUG_SPEED = True  # This flag makes text render fast
 
 
 def _render_and_pad(text_obj: Text, prev_last_len: int) -> int:
