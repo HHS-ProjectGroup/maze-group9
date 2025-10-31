@@ -14,9 +14,12 @@ from leaderboard import calculate_score, print_leaderboard, append_result, GameT
 from rooms import texts
 
 state = get_default_state()
+
+
 def _get_player_name() -> str:
     # Avoid blocking test automation
     import sys
+
     if os.getenv("MAZE_AUTOMATED_TESTING") == "1":
         return os.getenv("MAZE_TEST_PLAYER", "TestUser")
     # If stdin is not interactive (e.g., during automated tests), avoid prompting
@@ -26,18 +29,20 @@ def _get_player_name() -> str:
     except Exception:
         return "Player"
     try:
-        name = input("Enter your name for the leaderboard (leave empty for 'Player'): ").strip()
+        name = input(
+            "Enter your name for the leaderboard (leave empty for 'Player'): "
+        ).strip()
         return name if name else "Player"
     except Exception:
         return "Player"
 
 
-
 def main(state):
     texts.WELCOMING_TEXT_0()
     texts.WELCOMING_TEXT_1()
-    texts.CORRIDOR_TEXT_UNVISITED_0()
-    state["score"] += 100
+    if not state["visited"][ROOM1]:
+        texts.CORRIDOR_TEXT_UNVISITED_0()
+        state["score"] += 100
 
     while True:
         current = state["current_room"]
@@ -97,7 +102,11 @@ if __name__ == "__main__":
         except Exception:
             session_seconds = 0.0
         try:
-            prev = float(state.get("elapsed_seconds", 0.0)) if isinstance(state, dict) else 0.0
+            prev = (
+                float(state.get("elapsed_seconds", 0.0))
+                if isinstance(state, dict)
+                else 0.0
+            )
         except Exception:
             prev = 0.0
         total_elapsed = max(0.0, prev + session_seconds)
@@ -112,12 +121,16 @@ if __name__ == "__main__":
             pass
 
         # Only record leaderboard when the game has been beaten
-        beaten = bool(state.get("game_beaten", False)) if isinstance(state, dict) else False
+        beaten = (
+            bool(state.get("game_beaten", False)) if isinstance(state, dict) else False
+        )
         if beaten:
             name = _get_player_name()
             calculate_score(state)
             append_result(name=name, score=state["score"], seconds=float(total_elapsed))
-            print(f"You scored {state["score"]}! Good job!\nYour result has been saved to the leaderboard. Thank you for playing!")
+            print(
+                f"You scored {state['score']}! Good job!\nYour result has been saved to the leaderboard. Thank you for playing!"
+            )
         else:
             # Don’t touch leaderboard on pause/quit before victory
             pass
