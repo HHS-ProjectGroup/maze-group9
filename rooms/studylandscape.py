@@ -7,6 +7,7 @@
 # -----------------------------------------------------------------------------
 
 import sys
+from rooms.texts import print_minimap
 from persistence import save_state, clear_state, reset_state
 from rooms import constants
 from rooms.texts import LOBBY_WELCOME, type_rich, glitch_line
@@ -182,45 +183,6 @@ def enter_studylandscape(state):
                     'This command does not exist. Check "?" out to find appropriate commands.'
                 )
         return ""
-
-    # --- Minimap ---
-    def print_minimap(state):
-
-        current_room = state["current_room"].lower()
-
-        def mark(room_name):
-            return "*" if current_room == room_name.lower() else " "
-
-        minimap = f"""
-           ┌──────────────────────────────────────────────────────────────────┐
-           │                                                                  │
-           │  ┌──────────┐  ┌──────────┐   ┌──────────┐  ┌──────────────────┐ │
-           │  │  Lab01   │  │   Lab03  │   │   Lobby  │  │     Corridor     │ │
-           │  │  ({mark("lab01")}7)  ├──┼──────────┤  │  ({mark("studylandscape")}5)           ({mark("corridor")}1) 
-           │  └────┬─────┘  └──────────┘   └──────────┘  └──────────────────┘ │
-           │       │                   │              │          │            │
-           │       │                   │              │          │            │
-           │       │                   │              │          │            │
-           │       │                   │              │          │            │
-           │       │                   │              │          │            │
-           │       │                   │              │          │            │
-           │       │                   │       ┌──────────┐  ┌──────────┐     │
-           │       │                   │       │ FrontDesk│  │  Classroom│    │
-           │       │                   │       │  Office  │  │  ({mark("classroom2015")}3)    
-           │       │                   │       │  ({mark("frontdeskoffice")}2)├
-           │       │                   │       └────┬─────┘  └──────────┘     │
-           │       │                   │            │                         │
-           │       │                   │       ┌────┴─────┐                   │
-           │       │                   │       │  HDDRoom │                   │
-           │       │                   │       │  ({mark("hddroom")}4)        │
-           │       │                   │       └──────────┘                   │
-           └──────────────────────────────────────────────────────────────────┘
-
-           """
-        print(minimap.strip("\n"))
-
-        for line in minimap.split("\n"):
-            glitch_line(real_line=line, glitch_delay=0.05, reveal_delay=0.01)
 
     # --- Main command loop ---
     while True:

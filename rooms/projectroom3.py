@@ -9,6 +9,7 @@
 
 import sys
 import random
+from rooms.texts import print_minimap
 from persistence import get_default_state, save_state, clear_state, reset_state
 from rooms.texts import PRJ3_DESC_0, PRJ3_DIALOG_ON_LEAVE, PRJ3_LOOK_AROUND, PRJ3_WELCOME_SOLVED, type_rich
 from rooms.constants import ITEM_3, ITEM_4, ROOM1, ROOM4
@@ -214,6 +215,7 @@ def enter_projectroom3(state):
 
         elif command == "?": #show available commands
             show_help()
+            print_minimap(state)
 
         elif command == "display status":
             display_status(state)
@@ -237,6 +239,7 @@ def enter_projectroom3(state):
 
         elif command.startswith("go "):
             result = handle_go(command[3:].strip().lower())
+            print_minimap(state)
             if result:
                 return result
 
