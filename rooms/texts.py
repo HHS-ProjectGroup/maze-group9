@@ -137,6 +137,11 @@ def glitch_line(real_line: str, glitch_delay=0.04, reveal_delay=0.02):
     Построчная "коррупция": пробелы остаются нетронутыми,
     все остальные символы временно заменяются на шум, затем постепенно раскрываются.
     """
+    # Honor fast rendering mode the same way as type_rich
+    if DEBUG_SPEED:
+        glitch_delay = 0
+        reveal_delay = 0
+
     glitch_chars = "!@#$%^&*()_+=-[]{};:',.<>?/\\|▒░█"
     length = len(real_line)
 
@@ -252,12 +257,12 @@ CORRIDOR_EMPTY = lambda: type_rich(
 # Front Desk
 
 FRNT_DESK_LOOK_AROUND = lambda: type_rich("""The office looks sterile, yet strangely personal.
-You see a few posters on the wall — “Quantum Science Week 2124”, “AGI Safety Seminar”.
+You see a few posters on the wall — [yellow]“Quantum Science Week 2124”[/yellow], [magenta]“AGI Safety Seminar”[/magenta].
 There’s a maintenance memo lying near the desk, its edges crumpled.
-A sticky note glows faintly under the screen:
+[magenta]A sticky note glows faintly under the screen:[/magenta]
 “Battery recharge — before noon meeting. Don’t forget, Voss.”
 On the terminal, a soft blue glow pulses over an unfinished email draft.
-A CAPTCHA prompt waits on the bottom of the screen, blocking access to the message.
+[yellow]A CAPTCHA prompt waits on the bottom of the screen, blocking access to the message.[/yellow]
 It looks simple enough — a short verification test to prove you’re “not a bot”.
 """)
 

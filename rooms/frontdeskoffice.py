@@ -120,7 +120,7 @@ The terminal still sits there, logged out and unresponsive — like the room its
 The battery slot under the desk is empty.""")
 
     else:
-     type_rich("""You step into the Front Desk Office.
+        type_rich("""You step into the Front Desk Office.
 The air feels warmer here, as if the ventilation is still running.
 A single desk stands in the center, covered with faint holographic residue.
 A terminal hums quietly — still logged in, its display frozen on a half-written email.
@@ -128,6 +128,7 @@ Papers and notes are scattered around; a coffee cup rests by the keyboard, still
 Whoever worked here must’ve left in a hurry.""")
 
 def _look_around():
+    type_rich("You take a look around...", dialog=True)
     FRNT_DESK_LOOK_AROUND()
 
 def _pick_new_puzzle(state):
@@ -187,9 +188,9 @@ def _show_puzzle(state):
 def _print_commands(state):
     # Keep the contextual usage line and dynamic hint on first visit
     if not state["visited"][ROOM2]:
-        type_rich("\nType your move like: answer White queen to G8")
+        type_rich("\n[yellow]Type your move like:[/yellow] answer White queen to G8")
         if _CURRENT_MOVE_HINT:
-            type_rich(_CURRENT_MOVE_HINT)
+            type_rich(f"[yellow]{_CURRENT_MOVE_HINT}[/yellow]")
 
     # Build room-specific commands and delegate printing to the generic helper
     specifics: dict[str, str] = {}
@@ -259,13 +260,17 @@ def enter_frontdeskoffice(state):
 
         if command == "look around":
             _look_around()
+            # Corridor-style HUD lines for consistency
+            type_rich("[green]Possible exits: corridor[/green]")
+            type_rich(f"[blue]Your current inventory: {state['inventory']}[/blue]")
+            type_rich(f"[red]Your current health: {state['health']}[/red]")
             if not state["visited"][ROOM2]:
                 state["score"] += 20
                 _show_puzzle(state)
             continue
 
         if command in ["go back", "go corridor", "back"]:
-            type_rich("You step away from the holographic desk and return to the corridor.")
+            type_rich("You step away from the holographic desk and return to the corridor.", dialog=True)
             state["previous_room"] = ROOM2
             print_minimap(state)
             return "corridor"
@@ -276,7 +281,7 @@ def enter_frontdeskoffice(state):
                 continue
             parsed = _parse_answer(raw)
             if not parsed:
-                type_rich("example answer: answer White queen to B8")
+                type_rich("[yellow]Example:[/yellow] answer White queen to B8")
                 _legend()
                 continue
             p = state["frontdesk_puzzle"]
@@ -295,7 +300,7 @@ def enter_frontdeskoffice(state):
                 and (parsed["to"] == sol["to"])  # ensure same destination
             )
             if move_match or strict_match:
-                type_rich("\n[Cyber Receptionist]: ‘Correct. Accept your reward…’")
+                type_rich("\n[cyan][Cyber Receptionist][/cyan]: ‘Correct. Accept your reward…’")
                 type_rich(f"The Cyber Receptionist places a {ITEM_2} on the desk in front of you.")
                 type_rich(f"The {ITEM_2} hums softly with stored energy.")
                 # Spawn {ITEM_2} in the room (once)
@@ -307,7 +312,7 @@ def enter_frontdeskoffice(state):
                 FRONT_DESK_FAILED_CAPCHA()
                 state["score"] -= 50
                 state["frontdesk_question"] = None  # ensure a fresh random on next entry
-                type_rich("[Cyber Receptionist]: ‘Incorrect. EJECTING…’", dialog=True)
+                type_rich("[cyan][Cyber Receptionist][/cyan]: ‘Incorrect. EJECTING…’", dialog=True)
                 type_rich("You are flung out into the corridor!")
                 state["frontdesk_puzzle"] = None  # ensure a fresh random on next entry
                 state["previous_room"] = ROOM2
@@ -351,7 +356,7 @@ def enter_frontdeskoffice(state):
             finally:
                 sys.exit()
 
-        type_rich("❓ Unknown command. Type '?' to see available commands.")
+        type_rich("❓ Unknown command. Type '?' to see available commands.", dialog=True)
 
 
 # --- Helpers to render board and legend side by side ---
