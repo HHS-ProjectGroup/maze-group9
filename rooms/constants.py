@@ -13,3 +13,5 @@ ITEM_4 = "hard disk"
 ITEM_5 = "item5"
 ITEM_6 = "password"
 ITEM_7 = "item7"
+
+AVAILABLE_ROOMS = []

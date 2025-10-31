@@ -134,6 +134,7 @@ def enter_classroom2015(state):
         if choice == q["correct"]:
             texts.type_rich(f"\n✅ {q['success']}")
             room["stage"] += 1
+
             if room["stage"] == 4 and not has_item(ITEM_3):
                 # grant keycard by placing it on desk
                 place_keycard_on_desk()
@@ -170,6 +171,8 @@ def enter_classroom2015(state):
             result = handle_choose(command[7:].strip())
             if result:
                 return result
+            else:
+                show_question()
 
         elif command in ["a", "b", "c", "d"]:
             result = handle_choose(command)
@@ -195,16 +198,11 @@ def enter_classroom2015(state):
 
         elif command.startswith("go "):
             dest = command[3:].strip()
-            if dest in [ROOM1, "back", "leave"]:
+            if dest in [ROOM1, "back"]:
                 texts.type_rich(f"🚪 You leave the classroom and return to the {ROOM1}.")
                 return ROOM1
             else:
                 texts.type_rich(f"❌ You can’t go to '{dest}' from here.")
-
-        elif command in ["leave", "back"]:
-            texts.type_rich(f"🚪 You leave the classroom and return to the {ROOM1}.")
-            state["visited"][ROOM3] = True
-            return ROOM1
 
         elif command == "?":
             handle_help()

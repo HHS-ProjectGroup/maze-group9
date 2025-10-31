@@ -426,8 +426,6 @@ def _legend_lines():
             "| " + left.ljust(left_width) + gap + right.ljust(right_width) + " |"
         )
 
-    footnote_text = "(Empty squares are shown as blank)"
-    foot_line = "| " + footnote_text.ljust(total_inner) + " |"
     bottom = "+" + "-" * (total_inner + 2) + "+"
 
     return [
@@ -437,7 +435,6 @@ def _legend_lines():
         sep_line,
         *rows,
         sep_line,
-        foot_line,
         bottom,
         "",
     ]
