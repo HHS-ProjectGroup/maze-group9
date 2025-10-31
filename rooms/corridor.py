@@ -124,15 +124,15 @@ def enter_corridor(state):
     turn_roll = random.random()
 
     if turn_roll < ENCOUNTER_CHANCE_BASE and not state["visited"][ROOM1][0]:
-        texts.CORRIDOR_TEXT_ENCOUNTE_0()
-        texts.CORRIDOR_TEXT_ENCOUNTE_1()
-        texts.CORRIDOR_TEXT_ENCOUNTE_2()
+        texts.CORRIDOR_TEXT_ENCOUNTER_0()
+        texts.CORRIDOR_TEXT_ENCOUNTER_1()
+        texts.CORRIDOR_TEXT_ENCOUNTER_2()
         result = generate_quadratic_inequality(state)
         if result:
             texts.CORRIDOR_TEXT_PROBLEM_SOLVED_0()
             state["visited"][ROOM1][1] -= 1
             if state["visited"][ROOM1][1] == 0: # If all encounters are completed, give the item
-                texts.CORRIDOR_TEXT_REVIEL_ITEM()
+                texts.CORRIDOR_TEXT_REVEAL_ITEM()
                 state["visited"][ROOM1][0] = True
         else:
             texts.CORRIDOR_TEXT_PROBLEM_FAILED_0()
