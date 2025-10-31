@@ -10,10 +10,9 @@ import sys
 from persistence import save_state, clear_state, reset_state
 from rooms import constants
 from rooms.texts import LOBBY_WELCOME, type_rich, glitch_line
-# Bianca's room item. It is needed in order to get the access to the StudyLandscape
-REWARD_ITEM = constants.ITEM_4
-from .constants import ITEM_4,ITEM_5
+from .constants import ITEM_4
 from .utils import display_status, handle_help_generic
+
 #Bianca's room item. It is needed in order to get the access to the StudyLandscape
 REWARD_ITEM = ITEM_4
 
@@ -61,7 +60,7 @@ def enter_studylandscape(state):
     # story-telling script
     def handle_look():
         """Describe the lobby and show exits."""
-        type_rich("\nYou take a slow look around.")
+        type_rich("You take a slow look around.")
         type_rich(
             "Soft chairs and worktables fill the open space. Most monitors are in sleep mode."
         )
@@ -82,7 +81,8 @@ def enter_studylandscape(state):
         type_rich("G H I J K L", dialog=True)
         type_rich("M N O P Q R", dialog=True)
         type_rich("S T U V W X", dialog=True)
-        type_rich("Y Z \n Shift is left 4", dialog=True)
+        type_rich("Y Z", dialog=True)
+        type_rich("Hint: shift is left 4")
 
         # encrypted word
         encrypted = ""
@@ -100,11 +100,14 @@ def enter_studylandscape(state):
         guess = input("Your guess: ").strip().lower()
         if guess == word:
             type_rich("Congratulations! You got it!", dialog=True)
+            state["score"] += 200
         else:
-            type_rich("wrong", dialog=True)
+            type_rich("Wrong", dialog=True)
 
             # User gave wrong answer. Does he want to give a new one?
             def wanna_decrypt_choice():
+                state["score"] -= 50
+
                 wanna_try = (
                     input('Do you want to take one more guess? "yes" or "no": ')
                     .strip()

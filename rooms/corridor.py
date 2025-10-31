@@ -131,10 +131,14 @@ def enter_corridor(state):
         if result:
             texts.CORRIDOR_TEXT_PROBLEM_SOLVED_0()
             state["visited"][ROOM1][1] -= 1
+            state["score"] += 100
             if state["visited"][ROOM1][1] == 0: # If all encounters are completed, give the item
+                state["score"] += 200
+
                 texts.CORRIDOR_TEXT_REVEAL_ITEM()
                 state["visited"][ROOM1][0] = True
         else:
+            state["score"] -= 50
             texts.CORRIDOR_TEXT_PROBLEM_FAILED_0()
             take_damage(state)
             texts.CORRIDOR_TEXT_PROBLEM_FAILED_1()
@@ -157,7 +161,8 @@ def enter_corridor(state):
         texts.type_rich(f"[green]Possible doors: {', '.join(available_rooms)}[/green]")
         texts.type_rich(f"[blue]Your current inventory: {state['inventory']}[/blue]")
         texts.type_rich(f"[red]Your current health: {state['health']}[/red]")
-    
+        state["score"] += 20
+
     def handle_help():
         if state["visited"][ROOM1][0] and ITEM_1 not in state["inventory"]:
             handle_help_generic(room_name=ROOM1, specifics={f"take {ITEM_1}": "Pick up the manual once it's revealed"})
@@ -173,6 +178,7 @@ def enter_corridor(state):
             else:
                 texts.type_rich("You take it and tuck it safely into your backpack.", dialog=True)
                 state["inventory"].append(ITEM_1)
+                state["score"] += 300
         else:
             texts.type_rich(f"There is no '{item_input}' here to take.")
 

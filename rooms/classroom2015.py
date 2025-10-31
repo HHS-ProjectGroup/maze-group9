@@ -67,7 +67,6 @@ def enter_classroom2015(state):
     def handle_help():
         handle_help_generic(ROOM3, specifics={
             "approach cyborg": f"Begin or continue the conversation (requires {ITEM_2}).",
-            "talk": "Re-show the current question.",
             "choose <a|b|c|d>": "Pick an answer",
             "search large desk": "Inspect the large desk",
             f"take {ITEM_3}": "Pick up the keycard (once visible).",
@@ -119,6 +118,7 @@ def enter_classroom2015(state):
             texts.c2015_APPROACH(has_item=True)
             room["conversation_active"] = True
             room["stage"] = 1
+            state["score"] += 30
             show_question()
 
 
@@ -134,14 +134,18 @@ def enter_classroom2015(state):
         if choice == q["correct"]:
             texts.type_rich(f"\n✅ {q['success']}")
             room["stage"] += 1
+            state["score"] += 100
 
             if room["stage"] == 4 and not has_item(ITEM_3):
                 # grant keycard by placing it on desk
+                state["score"] += 40
                 place_keycard_on_desk()
         else:
             texts.type_rich("\n❌ Wrong answer. The cyborg stiffens.")
+            state["score"] -= 50
             room["missteps"] += 1
             if room["missteps"] >= 3:
+                state["score"] -= 100
                 texts.type_rich("🚨 The cyborg’s optics flash red. 'Clear the area.'")
                 room["stage"] = 1
                 room["missteps"] = 0
@@ -156,6 +160,7 @@ def enter_classroom2015(state):
 
         if command == "look around":
             texts.c2015_LOOK_AROUND()
+            state["score"] += 10
             if not has_item(ITEM_3) and room["stage"] >= 4:
                 texts.type_rich(f"On the desk lies a {ITEM_3}.")
             texts.type_rich(f"- Possible exits: {ROOM1}")
@@ -163,9 +168,6 @@ def enter_classroom2015(state):
 
         elif command == "approach cyborg":
             start_conversation()
-
-        elif command == "talk":
-            show_question()
 
         elif command.startswith("choose "):
             result = handle_choose(command[7:].strip())
@@ -190,6 +192,7 @@ def enter_classroom2015(state):
             if item in [ITEM_3, "keycard"] and not has_item(ITEM_3) and room["stage"] >= 4:
                 texts.type_rich(f"🔑 You take the {ITEM_3} and put it in your backpack.")
                 state["inventory"].append(ITEM_3)
+                state["score"] += 200
             else:
                 texts.type_rich(f"There is no '{item}' here to take.")
 

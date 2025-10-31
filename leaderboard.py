@@ -1,7 +1,7 @@
 import csv
 import os
 import time
-from typing import List, Tuple
+from typing import List, Tuple, Any
 
 LEADERBOARD_FILE = "leaderboard.csv"
 MAX_ENTRIES = 10
@@ -82,3 +82,14 @@ class GameTimer:
             return 0.0
         end = self.end_time if self.end_time is not None else time.perf_counter()
         return max(0.0, end - self.start_time)
+
+
+def calculate_score(state: dict[str, Any]) -> None:
+    """
+    Per-second proportional penalty: 100 points per minute, scaled by seconds
+    Example: 2 minutes 30 seconds (150s) → penalty = floor(150 * 100 / 60) = 250
+    """
+
+    time_penalty = int(float(state["elapsed_seconds"]) * (100.0 / 60.0))
+    time_penalty_adjusted = max(0, 3000 - time_penalty)
+    state["score"] -= time_penalty_adjusted 

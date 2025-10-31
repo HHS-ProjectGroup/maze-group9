@@ -10,7 +10,7 @@ from rooms import (
 )
 from rooms.constants import ROOM1, ROOM2, ROOM3, ROOM4, ROOM5, ROOM6, ROOM7
 from persistence import load_state, get_default_state, save_state
-from leaderboard import print_leaderboard, append_result, GameTimer
+from leaderboard import calculate_score, print_leaderboard, append_result, GameTimer
 from rooms import texts
 
 state = get_default_state()
@@ -37,6 +37,7 @@ def main(state):
     texts.WELCOMING_TEXT_0()
     texts.WELCOMING_TEXT_1()
     texts.CORRIDOR_TEXT_UNVISITED_0()
+    state["score"] += 100
 
     while True:
         current = state["current_room"]
@@ -65,11 +66,8 @@ def main(state):
         elif current == ROOM6:
             state["current_room"] = enter_lab03(state)
 
-        elif current == ROOM7:
-            state["current_room"] = enter_lab01(state)
-
         else:
-            print("Unknown room. Exiting game.")
+            texts.type_rich("Unknown room. Exiting game.")
             break
 
 
@@ -106,7 +104,7 @@ if __name__ == "__main__":
         if isinstance(state, dict):
             state["elapsed_seconds"] = total_elapsed
             # Ensure score key exists for persistence
-            state.setdefault("score", 0)
+            # state.setdefault("score", 0)
         # Save the latest state (including time/score) so pause/quit resumes correctly
         try:
             save_state(state)
@@ -117,17 +115,9 @@ if __name__ == "__main__":
         beaten = bool(state.get("game_beaten", False)) if isinstance(state, dict) else False
         if beaten:
             name = _get_player_name()
-            try:
-                # Per-second proportional penalty: 100 points per minute, scaled by seconds
-                # Example: 2 minutes 30 seconds (150s) → penalty = floor(150 * 100 / 60) = 250
-                penalty = int(float(total_elapsed) * (100.0 / 60.0))
-                score_val = max(0, 3000 - penalty)
-                if isinstance(state, dict):
-                    state["score"] = score_val
-            except Exception:
-                score_val = 0
-            append_result(name=name, score=score_val, seconds=float(total_elapsed))
-            print("\nYour result has been saved to the leaderboard. Thank you for playing!")
+            calculate_score(state)
+            append_result(name=name, score=state["score"], seconds=float(total_elapsed))
+            print(f"You scored {state["score"]}! Good job!\nYour result has been saved to the leaderboard. Thank you for playing!")
         else:
             # Don’t touch leaderboard on pause/quit before victory
             pass

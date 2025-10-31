@@ -8,6 +8,7 @@
 
 import os
 import sys
+from leaderboard import calculate_score
 from rooms.texts import glitch_line, type_rich
 
 
@@ -79,10 +80,11 @@ def handle_help_generic(
             )
 
 def take_damage(state):
-    print("\nYou lost 1 HP.")
+    type_rich("You lost 1 HP.")
     state["health"] -= 1
     if state["health"] == 0:
-        print("You died. The game is over.")
+        calculate_score(state)
+        type_rich(f"You died. The game is over. You scored {state["score"]}. Good luck next time!")
         sys.exit()
 
 

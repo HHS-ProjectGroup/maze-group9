@@ -189,7 +189,7 @@ def start_game() -> Terminal:
         name="credentials.txt",
         owner="student1730",
         group="sudoers",
-        content="secret key: " + CHALLENGE_RESULT,
+        content="don't forget the root password: " + CHALLENGE_RESULT,
     )
     log = File(
         name=".bash_history_2125-10-10",
@@ -219,6 +219,7 @@ def enter_the_pc(state: dict) -> str | None:
     """So we gotta figure smth out"""
 
     game = start_game()
+    state["score"] += 50
     game.handle_help()
 
     while True:
@@ -234,6 +235,7 @@ def enter_the_pc(state: dict) -> str | None:
             case "ls":
                 glitch_line(game.ls())
             case "exit":
+                state["score"] -= 100
                 break
             case "clear":
                 game.clear()
@@ -250,6 +252,7 @@ def enter_the_pc(state: dict) -> str | None:
                     game.handle_help()
                 else:
                     if _ == 0:
+                        state["score"] += 500
                         beat_game(state=state)
                     break
     return DESTINATION
@@ -268,6 +271,7 @@ def enter_lab03(state: dict):
     # --- Command handlers ---
 
     def handle_look():
+        state["score"] += 20
         type_rich("You scan the room.")
 
         type_rich(
@@ -301,7 +305,7 @@ def enter_lab03(state: dict):
         """List available commands."""
         add = {}
         if not state["visited"].get(ROOM6):
-            add = {"enter the <pc>": "You may find something useful in it."}
+            add = {"enter the PC": "You may find something useful in it."}
         handle_help_generic(ROOM6, specifics=add)
 
     def handle_go(destination):

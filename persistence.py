@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS game_state (
 );
 """
 
-UPSERT = """
+INSERT = """
 INSERT INTO game_state (id, state_json) VALUES (1, ?)
 ON CONFLICT(id) DO UPDATE SET state_json=excluded.state_json, updated_at=CURRENT_TIMESTAMP;
 """
@@ -46,7 +46,7 @@ def save_state(state: Dict[str, Any], db_path: Optional[str] = None) -> None:
     payload = json.dumps(state)
     with _connect(db_path) as conn:
         conn.execute(SCHEMA)
-        conn.execute(UPSERT, (payload,))
+        conn.execute(INSERT, (payload,))
         conn.commit()
 
 
@@ -98,9 +98,10 @@ def get_default_state() -> Dict[str, Any]:
         "inventory": [],
         "health": 3,
         # New fields to persist across sessions
-        "score": 0,
         "elapsed_seconds": 0.0,
         "game_beaten": False,
+        # Score system
+        "score": 0,
     }
 
 

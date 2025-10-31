@@ -258,10 +258,11 @@ def enter_frontdeskoffice(state):
         if command == "look around":
             _look_around()
             if not state["visited"][ROOM2]:
+                state["score"] += 20
                 _show_puzzle(state)
             continue
 
-        if command == "go back" or command == "go corridor" or command == "back":
+        if command in ["go back", "go corridor", "back"]:
             type_rich("You step away from the holographic desk and return to the corridor.")
             state["previous_room"] = ROOM2
             return "corridor"
@@ -297,11 +298,13 @@ def enter_frontdeskoffice(state):
                 # Spawn {ITEM_2} in the room (once)
                 state["frontdesk_reward_spawned"] = True
                 state["visited"][ROOM2] = True
+                state["score"] += 50
                 # After success, no new questions; player can type '?' to see available commands
             else:
                 FRONT_DESK_FAILED_CAPCHA()
+                state["score"] -= 50
                 state["frontdesk_question"] = None  # ensure a fresh random on next entry
-                type_rich("\n[Cyber Receptionist]: ‘Incorrect. EJECTING…’")
+                type_rich("[Cyber Receptionist]: ‘Incorrect. EJECTING…’", dialog=True)
                 type_rich("You are flung out into the corridor!")
                 state["frontdesk_puzzle"] = None  # ensure a fresh random on next entry
                 state["previous_room"] = ROOM2
@@ -315,6 +318,7 @@ def enter_frontdeskoffice(state):
                     if ITEM_2 in state["inventory"]:
                         type_rich(f"You already took the {ITEM_2}.")
                     else:
+                        state["score"] += 200
                         type_rich(f"🔋 You take the {ITEM_2} and store it in your backpack.")
                         state["inventory"].append(ITEM_2)
                         # {ITEM_2} picked up; keep reward flag so no new {ITEM_2} spawns

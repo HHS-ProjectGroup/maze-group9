@@ -43,7 +43,7 @@ def enter_projectroom3(state):
     # ---------- gate: first-ever entry needs the keycard ----------
     if not state["visited"][ROOM4]:
         if ENTRY_KEYCARD not in state["inventory"]:
-            type_rich("🔒 The blurred glass door of Project Room 3 blinks red. Probably you can't access it yet.")
+            type_rich("🔒 The blurred glass door of Project Room 3 blinks red. You can't access it yet.")
             return ROOM1
         else:
             type_rich("🪪 Just as you approach it, the glass turnes transperent and lits up. The lock blinks green and the door slides open.")
@@ -53,6 +53,7 @@ def enter_projectroom3(state):
     if solved:
         PRJ3_WELCOME_SOLVED()
     else:
+        state["score"] += 50
         PRJ3_DESC_0()
 
     # mark as visited so the door gate won't repeat
@@ -105,6 +106,7 @@ def enter_projectroom3(state):
         state["flags"]["projectroom3_solved"] = True
         type_rich("🎉 The console flashes green. WORD UNLOCKED.")
         if not state["flags"]["projectroom3_reward_taken"]:
+            state["score"] += 50
             print(f"🏅 A compartment opens, revealing the {REWARD_ITEM}. Use 'take {REWARD_ITEM.lower()}'.")
         else:
             type_rich("The reward compartment is already empty.")
@@ -112,6 +114,7 @@ def enter_projectroom3(state):
         PRJ3_DIALOG_ON_LEAVE()
 
     def fail_and_eject():#if puzzle fails, player is sent out
+        state["score"] -= 150
         type_rich("🚨 Alarms blare. The console locks and the door slides open. The room says: ")
         type_rich("'Return when you are ready.'", dialog=True)
         return ROOM1
@@ -139,12 +142,15 @@ def enter_projectroom3(state):
                 if ch == letter:
                     revealed[i] = letter
             type_rich("✅ Correct.")
+            state["score"] += 25
             print_status()
             if "_" not in revealed: #if no underscores left - word completed
+                state["score"] += 50
                 finish_success()
         else: #wrong guess
             attempts_left -= 1
             type_rich("❌ Not present.")
+            state["score"] -= 25
             print_status()
             if attempts_left <= 0:  #if no attempts left - left and eject
                 return fail_and_eject()
@@ -167,6 +173,7 @@ def enter_projectroom3(state):
             return None
         else:  # wrong solution
             attempts_left -= 1
+            state["score"] -= 50
             type_rich("❌ Wrong word.")
             print_status()
             if attempts_left <= 0:
@@ -187,6 +194,7 @@ def enter_projectroom3(state):
         state["flags"]["projectroom3_reward_taken"] = True
         if REWARD_ITEM not in state["inventory"]:
             state["inventory"].append(REWARD_ITEM)
+        state["score"] += 50
         print(f"🧷 Taken: {REWARD_ITEM}.")
 
     def handle_go(dest): #handle leaving this room back to corridor
@@ -211,6 +219,7 @@ def enter_projectroom3(state):
             display_status(state)
 
         elif command == "start challenge": #begin the hangman puzzlr
+            state["score"] += 30
             start_challenge()
 
         elif command.startswith("guess "): #guess a single letter
