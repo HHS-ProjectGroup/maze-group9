@@ -1,4 +1,5 @@
 import sys
+from rooms.texts import print_minimap
 from dataclasses import dataclass, field
 from typing import cast, Callable
 
@@ -332,10 +333,12 @@ def enter_lab03(state: dict):
 
         elif command in ["?", "help"]:
             handle_help()
+            print_minimap(state)
 
         elif command.startswith("go "):
             destination = command[3:].strip()
             result = handle_go(destination)
+            print_minimap(state)
             if result:
                 return result
 
