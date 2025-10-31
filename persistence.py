@@ -93,8 +93,15 @@ def get_default_state() -> Dict[str, Any]:
             "classroom2015": False,
             "projectroom3": False,
             "frontdeskoffice": False,
-            "corridor": [False, 3],  # the number of encounters left
+            "corridor": False,
         },
+        "challenge-completed": {
+            "classroom2015": False,
+            "projectroom3": False,
+            "frontdeskoffice": False,
+            "corridor": False,
+        },
+        "corridor-encounters": 3,
         "inventory": [],
         "health": 3,
         # New fields to persist across sessions

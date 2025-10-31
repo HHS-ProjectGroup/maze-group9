@@ -113,9 +113,10 @@ def generate_quadratic_inequality(state):
             texts.type_rich("❓ Unknown command. Type '?' to see available commands.")
 
 def enter_corridor(state):
-    if state["visited"][ROOM1][0]:
+    state["visited"][ROOM1] = True
+    if state["challenge-completed"][ROOM1]:
         texts.CORRIDOR_EMPTY()
-    elif state["visited"][ROOM1][1] < 3: 
+    elif state["corridor-encounters"] < 3:
         texts.CORRIDOR_TEXT_VISITED_0()
 
     # --- List of accessible rooms from here ---
@@ -123,17 +124,17 @@ def enter_corridor(state):
     # --- Calculate encounter chance ---
     turn_roll = random.random()
 
-    if turn_roll < ENCOUNTER_CHANCE_BASE and not state["visited"][ROOM1][0]:
+    if turn_roll < ENCOUNTER_CHANCE_BASE and not state["challenge-completed"][ROOM1]:
         texts.CORRIDOR_TEXT_ENCOUNTER_0()
         texts.CORRIDOR_TEXT_ENCOUNTER_1()
         texts.CORRIDOR_TEXT_ENCOUNTER_2()
         result = generate_quadratic_inequality(state)
         if result:
             texts.CORRIDOR_TEXT_PROBLEM_SOLVED_0()
-            state["visited"][ROOM1][1] -= 1
-            if state["visited"][ROOM1][1] == 0: # If all encounters are completed, give the item
+            state["corridor-encounters"] -= 1
+            if state["corridor-encounters"] == 0: # If all encounters are completed, give the item
                 texts.CORRIDOR_TEXT_REVEAL_ITEM()
-                state["visited"][ROOM1][0] = True
+                state["challenge-completed"][ROOM1] = True
         else:
             texts.CORRIDOR_TEXT_PROBLEM_FAILED_0()
             take_damage(state)
@@ -159,14 +160,14 @@ def enter_corridor(state):
         texts.type_rich(f"[red]Your current health: {state['health']}[/red]")
     
     def handle_help():
-        if state["visited"][ROOM1][0] and ITEM_1 not in state["inventory"]:
+        if state["challenge-completed"][ROOM1] and ITEM_1 not in state["inventory"]:
             handle_help_generic(room_name=ROOM1, specifics={f"take {ITEM_1}": "Pick up the manual once it's revealed"})
         else:
             handle_help_generic(room_name=ROOM1)
 
     def handle_take(item_input):
         if item_input == ITEM_1:
-            if not state["visited"][ROOM1][0]:
+            if not state["challenge-completed"][ROOM1]:
                 texts.type_rich(f"❌ There's no {ITEM_1} visible yet. Visit again to see more challenges")
             elif ITEM_1 in state["inventory"]:
                 texts.type_rich(f"You already have the {ITEM_1} in your backpack.")

@@ -36,7 +36,8 @@ def _get_player_name() -> str:
 def main(state):
     texts.WELCOMING_TEXT_0()
     texts.WELCOMING_TEXT_1()
-    texts.CORRIDOR_TEXT_UNVISITED_0()
+    if not state["visited"][ROOM1]:
+        texts.CORRIDOR_TEXT_UNVISITED_0()
 
     while True:
         current = state["current_room"]
