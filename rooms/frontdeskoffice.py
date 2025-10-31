@@ -11,7 +11,7 @@ import sys
 import re
 from rooms.texts import print_minimap
 from persistence import save_state, clear_state, reset_state
-from rooms.texts import FRONT_DESK_FAILED_CAPCHA, FRONT_DESK_LOOK_AROUND, FRONT_DESK_SOLVED_CAPCHA, type_rich
+from rooms.texts import FRONT_DESK_FAILED_CAPCHA, FRNT_DESK_LOOK_AROUND, FRNT_DESK_SOLVED_CAPCHA, type_rich
 from .constants import ITEM_2, ROOM2
 from .utils import display_status, handle_help_generic
 
@@ -128,7 +128,7 @@ Papers and notes are scattered around; a coffee cup rests by the keyboard, still
 Whoever worked here must’ve left in a hurry.""")
 
 def _look_around():
-    FRONT_DESK_LOOK_AROUND()
+    FRNT_DESK_LOOK_AROUND()
 
 def _pick_new_puzzle(state):
     global _CURRENT_MOVE_HINT
