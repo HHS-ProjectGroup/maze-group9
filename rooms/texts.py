@@ -251,7 +251,7 @@ CORRIDOR_EMPTY = lambda: type_rich(
 
 # Front Desk
 
-FRNT_DESK_LOOK_AROUND = lambda: type_rich("""The office looks sterile, yet strangely personal.
+FRONT_DESK_LOOK_AROUND = lambda: type_rich("""The office looks sterile, yet strangely personal.
 You see a few posters on the wall — “Quantum Science Week 2124”, “AGI Safety Seminar”.
 There’s a maintenance memo lying near the desk, its edges crumpled.
 A sticky note glows faintly under the screen:
@@ -261,7 +261,7 @@ A CAPTCHA prompt waits on the bottom of the screen, blocking access to the messa
 It looks simple enough — a short verification test to prove you’re “not a bot”.
 """)
 
-FRNT_DESK_SOLVED_CAPCHA = lambda: type_rich("""The CAPTCHA dissolves, replaced by a dull email window.
+FRONT_DESK_SOLVED_CAPCHA = lambda: type_rich("""The CAPTCHA dissolves, replaced by a dull email window.
 Most of the text is corrupted — strings of broken characters, timestamps, and placeholders.
 The only readable fragment says:
 “...system lockdown initiated at 09:14... keys transferred to Mara... access revoked for general staff...”
