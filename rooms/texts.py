@@ -14,8 +14,8 @@ GLITCH_CHARS = list("!@#$%^&*()-_+=~?<>|\\/[]{}:;.,0123456789▒░█▓")
 STOP_CHARS = " .,!?"
 GLITCH_PROB_BASE = 0.04
 GLITCH_PROB_STOP = 0.15
-DEBUG_SPEED = False # This flag makes text render fast
-
+# DEBUG_SPEED = False  # This flag makes text render fast
+DEBUG_SPEED = True  # This flag makes text render fast
 
 
 def _render_and_pad(text_obj: Text, prev_last_len: int) -> int:
@@ -57,7 +57,9 @@ def _show_cursor():
         pass
 
 
-def type_rich(raw_text: str, delay: float = 0.035, dialog: bool = False):
+def type_rich(
+    raw_text: str, delay: float = 0.035, dialog: bool = False, delay_scale=0.99
+):
     """
     Печать с поддержкой Rich-разметки.
     - Для dialog=False: простой посимвольный вывод (без перерисовки) — максимально совместим.
@@ -81,6 +83,7 @@ def type_rich(raw_text: str, delay: float = 0.035, dialog: bool = False):
                     time.sleep(delay * 2.0 * random.uniform(0.7, 1.2))
                 else:
                     time.sleep(delay * random.uniform(0.7, 1.3))
+                delay *= delay_scale
             console.print()
         finally:
             _show_cursor()
@@ -128,7 +131,7 @@ def type_rich(raw_text: str, delay: float = 0.035, dialog: bool = False):
         _show_cursor()
 
 
-def glitch_line(real_line, glitch_delay=0.04, reveal_delay=0.02):
+def glitch_line(real_line: str, glitch_delay=0.04, reveal_delay=0.02):
     """
     Построчная "коррупция": пробелы остаются нетронутыми,
     все остальные символы временно заменяются на шум, затем постепенно раскрываются.
@@ -529,8 +532,6 @@ E D E N v2.0
 def LAB03_ENTER():
     pass
 
-
-# Lab01
 
 # Generic
 

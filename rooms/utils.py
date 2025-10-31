@@ -8,7 +8,7 @@
 
 import os
 import sys
-from rooms.texts import type_rich
+from rooms.texts import glitch_line, type_rich
 
 
 def clearScreen():
@@ -83,4 +83,15 @@ def take_damage(state):
     state["health"] -= 1
     if state["health"] == 0:
         print("You died. The game is over.")
+        sys.exit()
+
+
+def beat_game(state):
+    type_rich("You beat the game!")
+    glitch_line("ヘ( ^o^)ノ＼(^_^ )")
+    try:
+        # Mark the game as beaten so the leaderboard can be updated in main
+        if isinstance(state, dict):
+            state["game_beaten"] = True
+    finally:
         sys.exit()
