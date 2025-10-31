@@ -7,7 +7,7 @@
 # -----------------------------------------------------------------------------
 
 import sys
-
+from rooms.texts import print_minimap
 from persistence import save_state, clear_state, reset_state
 from rooms import texts
 from rooms.utils import display_status, handle_help_generic
@@ -200,12 +200,14 @@ def enter_classroom2015(state):
             dest = command[3:].strip()
             if dest in [ROOM1, "back"]:
                 texts.type_rich(f"🚪 You leave the classroom and return to the {ROOM1}.")
+                print_minimap(state)
                 return ROOM1
             else:
                 texts.type_rich(f"❌ You can’t go to '{dest}' from here.")
 
         elif command == "?":
             handle_help()
+            print_minimap(state)
 
         elif command == "display status":
             display_status(state)

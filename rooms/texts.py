@@ -14,8 +14,8 @@ GLITCH_CHARS = list("!@#$%^&*()-_+=~?<>|\\/[]{}:;.,0123456789▒░█▓")
 STOP_CHARS = " .,!?"
 GLITCH_PROB_BASE = 0.04
 GLITCH_PROB_STOP = 0.15
-# DEBUG_SPEED = False  # This flag makes text render fast
-DEBUG_SPEED = True  # This flag makes text render fast
+DEBUG_SPEED = False # This flag makes text render fast
+
 
 
 def _render_and_pad(text_obj: Text, prev_last_len: int) -> int:
@@ -57,9 +57,7 @@ def _show_cursor():
         pass
 
 
-def type_rich(
-    raw_text: str, delay: float = 0.035, dialog: bool = False, delay_scale=0.99
-):
+def type_rich(raw_text: str, delay: float = 0.035, dialog: bool = False):
     """
     Печать с поддержкой Rich-разметки.
     - Для dialog=False: простой посимвольный вывод (без перерисовки) — максимально совместим.
@@ -83,7 +81,6 @@ def type_rich(
                     time.sleep(delay * 2.0 * random.uniform(0.7, 1.2))
                 else:
                     time.sleep(delay * random.uniform(0.7, 1.3))
-                delay *= delay_scale
             console.print()
         finally:
             _show_cursor()
@@ -131,7 +128,7 @@ def type_rich(
         _show_cursor()
 
 
-def glitch_line(real_line: str, glitch_delay=0.04, reveal_delay=0.02):
+def glitch_line(real_line, glitch_delay=0.04, reveal_delay=0.02):
     """
     Построчная "коррупция": пробелы остаются нетронутыми,
     все остальные символы временно заменяются на шум, затем постепенно раскрываются.
@@ -208,15 +205,15 @@ CORRIDOR_TEXT_NO_ENCOUNTER = lambda: type_rich(
     "You don't see any movement in the corridor. Yet you sure somebody is watching you"
 )
 
-CORRIDOR_TEXT_ENCOUNTER_0 = lambda: type_rich(
+CORRIDOR_TEXT_ENCOUNTE_0 = lambda: type_rich(
     """There’s a pulse — not of sound, but of light. The corridor freezes. On the far glass, a message fades in:"""
 )
 
-CORRIDOR_TEXT_ENCOUNTER_1 = lambda: type_rich(
+CORRIDOR_TEXT_ENCOUNTE_1 = lambda: type_rich(
     '"System requests participation in calibration."', dialog=True
 )
 
-CORRIDOR_TEXT_ENCOUNTER_2 = lambda: type_rich(
+CORRIDOR_TEXT_ENCOUNTE_2 = lambda: type_rich(
     """The letters rearrange themselves into a mathematical question, as if drawn by invisible hands. You realize — it’s not a request."""
 )
 
@@ -234,7 +231,7 @@ CORRIDOR_TEXT_PROBLEM_FAILED_1 = lambda: type_rich(
 )
 
 
-def CORRIDOR_TEXT_REVEAL_ITEM():
+def CORRIDOR_TEXT_REVIEL_ITEM():
     type_rich(
         "After third problem is solved, you see one more message arising on the screen:"
     )
@@ -250,7 +247,7 @@ CORRIDOR_EMPTY = lambda: type_rich(
 
 # Front Desk
 
-FRONT_DESK_LOOK_AROUND = lambda: type_rich("""The office looks sterile, yet strangely personal.
+FRNT_DSK_LOOK_AROUND = lambda: type_rich("""The office looks sterile, yet strangely personal.
 You see a few posters on the wall — “Quantum Science Week 2124”, “AGI Safety Seminar”.
 There’s a maintenance memo lying near the desk, its edges crumpled.
 A sticky note glows faintly under the screen:
@@ -260,14 +257,14 @@ A CAPTCHA prompt waits on the bottom of the screen, blocking access to the messa
 It looks simple enough — a short verification test to prove you’re “not a bot”.
 """)
 
-FRONT_DESK_SOLVED_CAPCHA = lambda: type_rich("""The CAPTCHA dissolves, replaced by a dull email window.
+FRNT_DSK_SOLVED_CAPCHA = lambda: type_rich("""The CAPTCHA dissolves, replaced by a dull email window.
 Most of the text is corrupted — strings of broken characters, timestamps, and placeholders.
 The only readable fragment says:
 “...system lockdown initiated at 09:14... keys transferred to Mara... access revoked for general staff...”
 Beneath the desk, you notice a blinking battery cell, still plugged into a portable charger.
 It looks intact — you could take it.""")
 
-FRONT_DESK_FAILED_CAPCHA = lambda: type_rich("""The CAPTCHA refreshes with a sharp tone.
+FRNT_DSK_FAILED_CAPCHA = lambda: type_rich("""The CAPTCHA refreshes with a sharp tone.
 The screen flickers, and the message window fades back to idle.
 You try again, but the terminal locks you out with a notice:
 “Access temporarily suspended — please verify again later.”
@@ -289,10 +286,11 @@ def c2015_APPROACH(has_item: bool):
         raw_text="You approach the cleaner. It gives no reaction. You are trying to move it to wake it up, but nothing happens either. You notice a button, and you press it."
     )
     if not has_item:
-        type_rich(raw_text="Hello! Please, plug.. m.e ..  ")
+        type_rich(raw_text="Hello! Please, plug.. m.e ..  ", dialog=True)
     else:
         type_rich(
             raw_text="Hello! Please, plug me. Thank you! I must have had some segfault in my mainframe. Let me dump core to check it out. By the way, who are you? I can't read your number",
+            dialog=True,
         )
 
 
@@ -532,8 +530,10 @@ def LAB03_ENTER():
     pass
 
 
+# Lab01
+
 # Generic
 
 
 if __name__ == "__main__":
-    CORRIDOR_TEXT_REVEAL_ITEM()
+    CORRIDOR_TEXT_REVIEL_ITEM()

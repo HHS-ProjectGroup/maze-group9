@@ -9,6 +9,7 @@
 import random
 import sys
 import re
+from rooms.texts import print_minimap
 from persistence import save_state, clear_state, reset_state
 from rooms.texts import FRONT_DESK_FAILED_CAPCHA, FRONT_DESK_LOOK_AROUND, FRONT_DESK_SOLVED_CAPCHA, type_rich
 from .constants import ITEM_2, ROOM2
@@ -253,6 +254,7 @@ def enter_frontdeskoffice(state):
 
         if command == "?":
             _print_commands(state)
+            print_minimap(state)
             continue
 
         if command == "look around":
@@ -264,6 +266,7 @@ def enter_frontdeskoffice(state):
         if command == "go back" or command == "go corridor" or command == "back":
             type_rich("You step away from the holographic desk and return to the corridor.")
             state["previous_room"] = ROOM2
+            print_minimap(state)
             return "corridor"
 
         if command.startswith("answer "):

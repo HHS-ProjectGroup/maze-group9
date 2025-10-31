@@ -9,7 +9,8 @@ ENCOUNTER_CHANCE_BASE = 0.75 # There is a %75 chance an encounter occurs
 
 import sys, random
 
-from rooms import texts 
+from rooms import texts
+from rooms.texts import print_minimap
 from .utils import clearScreen, handle_help_generic, display_status, take_damage
 from persistence import save_state, clear_state, reset_state
 from .constants import ITEM_1, ROOM1, ROOM2, ROOM3, ROOM4, ROOM5
@@ -85,6 +86,7 @@ def generate_quadratic_inequality(state):
 
         if command == "?":
             handle_help()
+            print_minimap(state)
 
         elif command == "display status":
             display_status(state)
@@ -208,6 +210,7 @@ def enter_corridor(state):
         elif command.startswith("go "):
             room = command[3:].strip()
             result = handle_go(room)
+            print_minimap(state)
             if result:
                 return result
 

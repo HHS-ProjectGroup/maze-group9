@@ -5,3 +5,4 @@ from rooms.lab03 import enter_lab03
 from rooms.studylandscape import enter_studylandscape
 from rooms.projectroom3 import enter_projectroom3
 from rooms.lab01 import enter_lab01
+from rooms.texts import print_minimap
