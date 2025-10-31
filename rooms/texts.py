@@ -534,6 +534,40 @@ def LAB03_ENTER():
 
 # Generic
 
+    # --- Minimap ---
+def print_minimap(state):
+        current_room = state["current_room"].lower()
+
+        def mark(room_name):
+            return "💂🏻‍♂️" if current_room == room_name.lower() else ""
+
+        minimap = f"""
+
+
+
+                                                                ┌──────────┐  ┌──────────┐
+                                                                │ FrontDesk│  │ Classroom│    
+                                                                │  Office  │  │ {mark("classroom2015")}  
+                                 ┌──────────┐                   │ {mark("frontdeskoffice")}
+                                 │          │                   └────┬─────┘  └──────────┘     
+                                 │ {mark("lab03")}                                  │             │
+                                 │  Lab03   │ ┌──────────────┐       ┌──────────────────┐ 
+                                 └──────────┘─│              │       │                  │
+                                ┌──────────   │StudyLandscape│───────│     Corridor     │ 
+                                │ {mark("lab01")}                 {mark("studylandscape")}{mark("corridor")}
+                                │  Lab01   │──│              │       └──────────────────┘  
+                                └──────────┘  └──────────────┘                  │
+                                                                                │
+                                                                                │
+                                                                           ┌────┴─────┐                   
+                                                                           │  HDDRoom │                   
+                                                                           │ {mark("projectroom3")}       
+                                                                           └──────────┘                   
+
+            """
+        # print(minimap.strip("\n"))
+        for line in minimap.split("\n"):
+            glitch_line(real_line=line, glitch_delay=0.05, reveal_delay=0.01)
 
 if __name__ == "__main__":
     CORRIDOR_TEXT_REVIEL_ITEM()
