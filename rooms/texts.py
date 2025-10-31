@@ -292,9 +292,9 @@ def c2015_APPROACH(has_item: bool):
         type_rich(raw_text="Hello! Please, plug.. m.e ..  ", dialog=True)
     else:
         type_rich(
-            raw_text="Hello! Please, plug me. Thank you! I must have had some segfault in my mainframe. Let me dump core to check it out. By the way, who are you? I can't read your number",
-            dialog=True,
+            raw_text="Hello! Please, plug me. Thank you! I must have had segfault in my mainframe.",
         )
+        type_rich("Let me dump core to check it out. By the way, who are you? I can't read your number")
 
 
 # Project Room 3
@@ -537,4 +537,4 @@ def LAB03_ENTER():
 
 
 if __name__ == "__main__":
-    CORRIDOR_TEXT_REVIEL_ITEM()
+    c2015_APPROACH(True)
