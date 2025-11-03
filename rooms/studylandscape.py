@@ -15,7 +15,7 @@ from .constants import ITEM_4
 from .utils import display_status, handle_help_generic
 
 #Bianca's room item. It is needed in order to get the access to the StudyLandscape
-REWARD_ITEM = ITEM_4
+REWARD_ITEM = constants.ITEM_4
 
 # the list of all the rooms
 rooms = [
@@ -49,12 +49,17 @@ approach_destinations = {
 
 # the enter scrpit
 def enter_studylandscape(state):
-    LOBBY_WELCOME()
-    if REWARD_ITEM in state["inventory"]:
+
+    if constants.ITEM_4 in state["inventory"]:
         type_rich(f"{constants.ITEM_4} is in your inventory")
         state["current_room"] = constants.ROOM5
+        LOBBY_WELCOME()
     else:
+        state["current_room"] = constants.ROOM1
         type_rich("Access denied")
+        return constants.ROOM1
+
+
 
     # --- Command handlers ---
 
@@ -205,7 +210,6 @@ def enter_studylandscape(state):
         elif command.startswith("go "):
             destination = command[3:].strip()
             result = handle_go(destination)
-            print_minimap(state)
             if result:
                 return result
 
@@ -233,7 +237,7 @@ def enter_studylandscape(state):
 """ Code for solo launch"""
 if __name__ == "__main__":
     state = {
-        "current_room": constants.ROOM1,
+        "current_room": constants.ROOM5,
         "previous_room": constants.ROOM1,
         "visited": {
             constants.ROOM3: False,
@@ -241,7 +245,7 @@ if __name__ == "__main__":
             constants.ROOM2: False,
             constants.ROOM1: [False, 3],  # the number of encounters left
         },
-        "inventory": [constants.ITEM_4],
+        "inventory": [],
         "health": 3,
     }
     enter_studylandscape(state)

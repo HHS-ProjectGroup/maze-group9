@@ -203,7 +203,6 @@ def enter_classroom2015(state):
             dest = command[3:].strip()
             if dest in [ROOM1, "back"]:
                 texts.type_rich(f"🚪 You leave the classroom and return to the {ROOM1}.")
-                print_minimap(state)
                 return ROOM1
             else:
                 texts.type_rich(f"❌ You can’t go to '{dest}' from here.")

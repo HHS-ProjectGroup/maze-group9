@@ -342,7 +342,6 @@ def enter_lab03(state: dict):
         elif command.startswith("go "):
             destination = command[3:].strip()
             result = handle_go(destination)
-            print_minimap(state)
             if result:
                 return result
 

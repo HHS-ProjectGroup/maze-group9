@@ -215,7 +215,6 @@ def enter_corridor(state):
         elif command.startswith("go "):
             room = command[3:].strip()
             result = handle_go(room)
-            print_minimap(state)
             if result:
                 return result
 

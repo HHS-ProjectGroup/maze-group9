@@ -554,21 +554,21 @@ def print_minimap(state):
 
 
                                                                 ┌──────────┐  ┌──────────┐
-                                                                │ FrontDesk│  │ Classroom│    
-                                                                │  Office  │  │ {mark("classroom2015")}  
-                                 ┌──────────┐                   │ {mark("frontdeskoffice")}
+                                                                │ FrontDesk│  │Classroom2015 
+                                                                │  Office  │  │       dis{mark("classroom2015")}  
+                                 ┌──────────┐                   │      {mark("frontdeskoffice")}
                                  │          │                   └────┬─────┘  └──────────┘     
-                                 │ {mark("lab03")}                                  │             │
+                                 │         {mark("lab03")}                          │             │
                                  │  Lab03   │ ┌──────────────┐       ┌──────────────────┐ 
                                  └──────────┘─│              │       │                  │
                                 ┌──────────   │StudyLandscape│───────│     Corridor     │ 
-                                │ {mark("lab01")}                 {mark("studylandscape")}{mark("corridor")}
+                                │    {mark("lab01")}                 {mark("studylandscape")}                     {mark("corridor")}
                                 │  Lab01   │──│              │       └──────────────────┘  
                                 └──────────┘  └──────────────┘                  │
                                                                                 │
                                                                                 │
                                                                            ┌────┴─────┐                   
-                                                                           │  HDDRoom │                   
+                                                                           │ProjectRoom3                   
                                                                            │ {mark("projectroom3")}       
                                                                            └──────────┘                   
 

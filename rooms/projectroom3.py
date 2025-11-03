@@ -239,7 +239,6 @@ def enter_projectroom3(state):
 
         elif command.startswith("go "):
             result = handle_go(command[3:].strip().lower())
-            print_minimap(state)
             if result:
                 return result
 
