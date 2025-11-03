@@ -29,7 +29,7 @@ rooms = [
 ]
 
 # the list of room which are accessible from the StudyLandcapeRoom
-available_rooms = [constants.ROOM1, constants.ROOM6, constants.ROOM7]
+available_rooms = [constants.ROOM1, constants.ROOM6]
 
 # did you approach a computer
 approach_computer = False
